@@ -16,7 +16,6 @@
           "imports": {
             "three": "https://unpkg.com/three/build/three.module.js",
             "OrbitControls":"https://unpkg.com/three/examples/jsm/controls/OrbitControls.js",
-            "GUI":"https://unpkg.com/three/examples/jsm/libs/lil-gui.module.min.js",
             "GLTFLoader":"https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js",
             "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js"
           }
@@ -25,7 +24,6 @@
     <script type="module">
         import * as THREE from "three";
         import { OrbitControls } from "OrbitControls";
-        import { GUI } from "GUI";
         import { GLTFLoader } from "GLTFLoader";
         import { OutlineEffect } from "OutlineEffect";
 const scene = new THREE.Scene();
@@ -78,9 +76,9 @@ gradientMap.needsUpdate = true;
 
 const floorgeo = new THREE.PlaneBufferGeometry(20000, 20000, 1, 1);
 const floormat = new THREE.MeshStandardMaterial({
-    roughness: 0.6,
-    metalness: 0.3,
-    color: 0x000000
+    roughness: 1.0,
+    metalness: 0.0,
+    color: 0x111111
 });
 
 
@@ -124,7 +122,6 @@ window.addEventListener('resize', () => {
 }, false);
 
 const effect = new OutlineEffect(renderer);
-const gui = new GUI();
 
 function animate() {
 
