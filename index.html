@@ -9,6 +9,34 @@
         body {
             overflow: hidden;
             margin: 0px;
+            height: 1000vh;
+        }
+
+        .floating {
+            background-color: rgba(0, 0, 0, 0);
+            text-align: center;
+        }
+
+        p {
+            position: relative;
+        }
+
+        .div-table {
+            display: table;
+            width: 500px;
+        }
+
+        .div-table-row {
+            display: table-row;
+            width: auto;
+            clear: both;
+        }
+
+        .div-table-col {
+            float: left;
+            display: table-column;
+            width: 44%;
+            padding: 3%;
         }
     </style>
     <script type="importmap">
@@ -26,153 +54,221 @@
         import { OrbitControls } from "OrbitControls";
         import { GLTFLoader } from "GLTFLoader";
         import { OutlineEffect } from "OutlineEffect";
-const scene = new THREE.Scene();
-// const materialOR = new THREE.MeshBasicMaterial({ color: "green" });
-// scene.overrideMaterial = materialOR;
+        const scene = new THREE.Scene();
+        // const materialOR = new THREE.MeshBasicMaterial({ color: "green" });
+        // scene.overrideMaterial = materialOR;
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(3, 3, 10);
-camera.lookAt(new THREE.Vector3(0, 0, 0));
+        const cam2Group = new THREE.Group();
+        const cameraGroup = new THREE.Group()
+        cam2Group.add(cameraGroup);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        cameraGroup.add(camera);
+        scene.add(cam2Group);
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+        const canvas = document.querySelector('canvas.webgl');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.maxPolarAngle = Math.PI * 0.495;
-controls.target.set(0, 0, 0);
-controls.minDistance = 4.0;
-controls.maxDistance = 200.0;
-const light = new THREE.AmbientLight(0x222222, 1);
-scene.add(light);
-// const dlight = new THREE.DirectionalLight(0xffffff, 1);
-// dlight.position.set(-0.6, 0.7, .2);
-const plight = new THREE.PointLight(0xffefdf,1,50,0.05);
-plight.castShadow = true;
-plight.shadow.mapSize.width = 2048;
-plight.shadow.mapSize.height = 2048;
-plight.shadow.camera.near = 0.1;
-plight.shadow.camera.far = 40;
-plight.shadow.focus = 1
-plight.shadow.bias = -0.002;
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-scene.add(light,plight);
+        let lastKnownScr = 0;
+        let ticking = false;
 
-scene.background = new THREE.Color(0x000000);
-scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+        // const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.maxPolarAngle = Math.PI * 0.495;
+        // controls.target.set(0, 0, 0);
+        // controls.minDistance = 4.0;
+        // controls.maxDistance = 200.0;
 
-const geometry = new THREE.TorusBufferGeometry(2, 0.06, 100, 100);
+        // const light = new THREE.AmbientLight(0x222222, 1);
+        // scene.add(light);
 
-const colors = new Uint8Array( 10 );
+        // const dlight = new THREE.DirectionalLight(0xffffff, 1);
+        // dlight.position.set(-0.6, 0.7, .2);
+        const plight = new THREE.PointLight(0xffefdf, 1, 50, 0.05);
+        plight.castShadow = true;
+        plight.shadow.mapSize.width = 2048;
+        plight.shadow.mapSize.height = 2048;
+        plight.shadow.camera.near = 0.1;
+        plight.shadow.camera.far = 40;
+        plight.shadow.focus = 1
+        plight.shadow.bias = -0.002;
 
-const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat;
-for ( let c = 0; c <= colors.length; c ++ ) {
-    colors[ c ] = ( c / colors.length ) * 256;
-}
-const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
-gradientMap.needsUpdate = true;
+        scene.add(plight);
 
-const floorgeo = new THREE.PlaneBufferGeometry(200, 200, 1, 1);
+        scene.background = new THREE.Color(0x000000);
+        scene.fog = new THREE.FogExp2(0x000000, 0.0025);
 
-var canvas = document.createElement('canvas');
-canvas.width = canvas.height = 500;
-var ctx = canvas.getContext('2d');
-var x = 250,
-    y = 250,
-    innerRadius = 0,
-    outerRadius = 200,
-    radius = 200;
-var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
-gradient.addColorStop(0, 'rgb(50,50,50)');
-gradient.addColorStop(0.5, 'black');
-ctx.fillStyle = gradient;
-ctx.fillRect(0,0,500,1500);
-var texture = new THREE.Texture(canvas);
-texture.needsUpdate = true;
-var cGradMaterial = new THREE.MeshStandardMaterial({
-    map: texture,
-    roughness: 1.0,
-    metalness: 0.0,
-});
+        const geometry = new THREE.TorusBufferGeometry(2, 0.06, 100, 100);
+
+        const colors = new Uint8Array(10);
+
+        const format = (renderer.capabilities.isWebGL2) ? THREE.RedFormat : THREE.LuminanceFormat;
+        for (let c = 0; c <= colors.length; c++) {
+            colors[c] = (c / colors.length) * 256;
+        }
+        const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
+        gradientMap.needsUpdate = true;
+
+        const floorgeo = new THREE.PlaneBufferGeometry(200, 200, 1, 1);
+
+        var texture = document.createElement('canvas');
+        texture.width = texture.height = 500;
+        var ctx = texture.getContext('2d');
+        var x = 250,
+            y = 250,
+            innerRadius = 0,
+            outerRadius = 200,
+            radius = 200;
+        var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
+        gradient.addColorStop(0, 'rgb(50,50,50)');
+        gradient.addColorStop(0.5, 'black');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 500, 1500);
+        var texture = new THREE.Texture(texture);
+        texture.needsUpdate = true;
+        var cGradMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
+            roughness: 1.0,
+            metalness: 0.0,
+        });
 
 
-const floor = new THREE.Mesh(floorgeo, cGradMaterial);
-floor.rotation.set(-0.5 * Math.PI, 0, 0)
-floor.position.set(0, 0, 0);
-floor.receiveShadow = true;
-const cube = new THREE.Object3D();
-cube.scale.set(0.11, 0.11, 0.11);
-cube.castShadow = true;
-const cube2 = new THREE.Object3D();
-cube2.scale.set(0.1, 0.1, 0.1);
-cube2.castShadow = true;
-scene.add(floor, cube, cube2);
+        const floor = new THREE.Mesh(floorgeo, cGradMaterial);
+        floor.rotation.set(-0.5 * Math.PI, 0, 0)
+        floor.position.set(0, 0, 0);
+        floor.receiveShadow = true;
+        scene.add(floor);
+        // const cube = new THREE.Object3D();
+        // cube.scale.set(0.11, 0.11, 0.11);
+        // cube.castShadow = true;
+        // const cube2 = new THREE.Object3D();
+        // cube2.scale.set(0.1, 0.1, 0.1);
+        // cube2.castShadow = true;
+        // scene.add(cube, cube2);
 
-const loader = new GLTFLoader();
-loader.load('models/combat.glb', function (gltf) {
-    for (let i = 0; i < gltf.scene.children.length; i++) {
-        const element = gltf.scene.children[i];
-        element.castShadow = true;
-        element.receiveShadow = true;
-    }
-    scene.add(gltf.scene);
-    animate();
-});
-loader.load('models/ring.glb', function (gltf) {
-    for (let i = 0; i < gltf.scene.children.length; i++) {
-        const element = gltf.scene.children[i];
-        element.castShadow = true;
-    }
-    cube.add(gltf.scene);
-    cube2.add(gltf.scene.clone());
-    animate();
-});
+        const loader = new GLTFLoader();
+        loader.load('models/combat.glb', function (gltf) {
+            for (let i = 0; i < gltf.scene.children.length; i++) {
+                const element = gltf.scene.children[i];
+                element.castShadow = true;
+                element.receiveShadow = true;
+            }
+            scene.add(gltf.scene);
+            animate();
+        });
+        // loader.load('models/ring.glb', function (gltf) {
+        //     for (let i = 0; i < gltf.scene.children.length; i++) {
+        //         const element = gltf.scene.children[i];
+        //         element.castShadow = true;
+        //     }
+        //     cube.add(gltf.scene);
+        //     cube2.add(gltf.scene.clone());
+        //     animate();
+        // });
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    render();
-}, false);
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            render();
+        }, false);
 
-const effect = new OutlineEffect(renderer,{"defaultThickness":0.0005,"defaultColor":[0.25,0.25,0.25]});
+        const effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
 
-function animate() {
+        function animate() {
 
-    requestAnimationFrame(animate);
-    render();
-}
+            requestAnimationFrame(animate);
+            render();
+        }
+        const camPositionsX = [8, 4, 6];
+        const camPositionsY = [8, 4, 6];
+        const camPositionsZ = [8, 4, 6];
 
-function render() {
-    var time = performance.now() * 0.001;
+        const cursor = {}
+        cursor.x = 0
+        cursor.y = 0
 
-    var x = Math.sin(0.25*time) * 2 ;
-    var y = Math.sin(0.05*time) * 0.5 + 4;
-    var z = Math.cos(0.25*time) * 2 ;
-    cube.position.x = x;
-    cube.position.y = y;
-    cube.position.z = z;
-    cube2.position.x = x;
-    cube2.position.y = y;
-    cube2.position.z = z;
-    plight.position.x = x;
-    plight.position.y = y+0.1;
-    plight.position.z = z;
-    cube.rotation.z =  -1.708;
-    cube.rotation.y = -1.708+time * -0.5;
-    cube2.rotation.y =  1.708+time * 0.25;
-    cube2.rotation.z = 1.708;
+        window.addEventListener('mousemove', (event) => {
+            cursor.x = event.clientX / window.innerWidth - 0.5
+            cursor.y = event.clientY / window.innerHeight - 0.5
+        })
+        
+        function lerp(before, after, atPoint) {
+            return before + (after - before) * atPoint;
+        };
 
-    effect.render(scene, camera);
-}
+        const uniTime = 1;
 
-animate();
+        window.addEventListener('scroll',()=> console.log(window.scrollY)
+)
+
+        function render() {
+            var time = uniTime* performance.now() * 0.001;
+            var delta = performance.delta;
+
+            var index = window.scrollY/document.height;
+            var position = index%camPositionsX.length;
+
+            var camGPosX = 0 + 0.25 * cursor.x
+            var camGPosY = 0 - 0.5 * cursor.y
+            cameraGroup.rotation.x += (-camGPosY - cameraGroup.rotation.x) * 0.1
+            cameraGroup.rotation.y += (camGPosX - cameraGroup.rotation.y) * 0.1
+            cam2Group.rotation.y = 0.025 * time+10;
+            // cameraGroup.position.set(camPosX, camPosY, camPosZ);
+            camera.position.set(0,2+1*Math.cos(0.025*time),7+3*Math.cos(0.025*time))
+            camera.lookAt(0, 1,0);
+
+            var x = 0 //Math.sin(0.25 * time) * 2;
+            var y = 4 //Math.sin(0.05 * time) * 0.5 + 4;
+            var z = 0 //Math.cos(0.25 * time) * 2;
+            // cube.position.x = x;
+            // cube.position.y = y;
+            // cube.position.z = z;
+            // cube2.position.x = x;
+            // cube2.position.y = y;
+            // cube2.position.z = z;
+            plight.position.x = x;
+            plight.position.y = y + 0.1;
+            plight.position.z = z;
+            // cube.rotation.z = -1.708;
+            // cube.rotation.y = -1.708 + time * -0.5;
+            // cube2.rotation.y = 1.708 + time * 0.25;
+            // cube2.rotation.z = 1.708;
+
+            effect.render(scene, camera);
+        }
+
+        animate();
     </script>
 </head>
 
 <body>
+
+    <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;"></canvas>
+
+    <div id="scrollable" class="floating">
+        <div class="div-table" id="mainTable">
+            <div class="div-table-row">
+                <p>some text about this project here</p>
+            </div>
+            <div class="div-table" id="subTable">
+                <div class="div-table-row">
+                    <div class="div-table-col">
+                        <p>some text about this project here</p>
+                    </div>
+                    <div class="div-table-col">
+                        <p>some text about this project here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 
 </html>
