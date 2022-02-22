@@ -31,6 +31,10 @@
         cameraGroup.add(camera);
         scene.add(cam2Group);
 
+        const bal = new THREE.SphereGeometry(0.0625, 32, 16);
+        const ball = new THREE.Mesh(bal, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        // scene.add(ball);
+
         const canvas = document.querySelector('canvas.webgl');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -126,9 +130,11 @@
             requestAnimationFrame(animate);
             render();
         }
-        const camPositionsX =   [2,2,       -3,-3,     -4,-4,       -2,-2,      1,1,      4,4,     6,6];
-        const camPositionsY =   [1.7,1.7,   1.5,1.5,    1.6,1.6,    1.8,1.8,    1.7,1.7,    1.4,1.4, 1.5,1.5];
-        const camPositionsZ =   [-5,-5,     -3,-3,      1.5, 1.5,   4,4,        7,7,      3,3,      0,0];
+        const camPositionsX = [0, 0, -3.6, -3.6, -3.35, -3.35, -2, -2, -3.15, -3.15, 2, 2, 2.5, 2.5];
+        const camPositionsY = [1.4, 1.4, 1.5, 1.5, 1.3, 1.3, 1.2, 1.2, 1.3, 1.3, 1.4, 1.4, 1.5, 1.5];
+        const camPositionsZ = [0, 0, -3.6, -3.6, 2.25, 2.25, 2.9, 2.9, -1, -1, 1.9, 1.9, -2.5, -2.5];
+
+        const scrollsY = [50, 50, 120, 120, 190, 190, 260, 260, 330, 330];
 
         const cursor = {}
         cursor.x = 0
@@ -144,6 +150,8 @@
         };
 
         const uniTime = 1;
+        const table = document.getElementById('mainTable');
+        table.style.position = "absolute";
 
         function render() {
             var time = uniTime * performance.now() * 0.001;
@@ -153,21 +161,28 @@
 
             var proportion = (camPositionsX.length) * window.scrollY / (12100 - window.innerHeight);
             var index = Math.floor(proportion);
-            var position = proportion-index;
+            var position = proportion - index;
             var posX = lerp(camPositionsX[index], camPositionsX[(index + 1 == camPositionsX.length ? index : index + 1)], position);
             var posY = lerp(camPositionsY[index], camPositionsY[(index + 1 == camPositionsY.length ? index : index + 1)], position);
             var posZ = lerp(camPositionsZ[index], camPositionsZ[(index + 1 == camPositionsZ.length ? index : index + 1)], position);
 
             cam2Group.position.set(posX, posY, posZ)
+            ball.position.set(posX, posY, posZ)
 
-            cameraGroup.position.set(0,0,4)
-            var camGPosX = 0 + 1.5 * cursor.x
-            var camGPosY = 0 - 1.25 * cursor.y
-            cameraGroup.rotation.y += (camGPosX - cameraGroup.rotation.y) * 0.1;
-            cameraGroup.rotation.x += (camGPosY - cameraGroup.rotation.x) * 0.1
+            cameraGroup.position.set(0, 0, 0)
+            var camGPosX = 3 + 2.5 * cursor.x
+            var camGPosY = -1.25 - 1.25 * cursor.y
+            // cam2Group.rotation.y += (camGPosX - cam2Group.rotation.y) * 0.1;
+            // cam2Group.rotation.x = Math.min(10, cam2Group.rotation.x + (camGPosY - cam2Group.rotation.x) * 0.1);
 
-            camera.position.set(3*Math.cos(time*0.2),0,3*Math.sin(time*0.2))
+            camera.position.set(3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
             camera.lookAt(posX, posY, posZ);
+
+            var tabProportion = (camPositionsX.length) * window.scrollY / (12100 - window.innerHeight);
+            var tabIndex = Math.floor(tabProportion);
+            var tabPosition = tabProportion - tabIndex;
+            table.style.left = 0 + 'vw';
+            table.style.top = lerp(scrollsY[index], scrollsY[(index + 1 == scrollsY.length ? index : index + 1)], tabPosition); + 'vh';
 
             effect.render(scene, camera);
         }
@@ -177,12 +192,13 @@
     <style>
         body {
             margin: 0px;
-            height: 12000px;
+            height: 11000px;
         }
 
         .floating {
             background-color: rgba(0, 0, 0, 0);
             text-align: center;
+            overflow-y: scroll;
         }
 
         p {
@@ -194,6 +210,7 @@
             width: 85%;
             margin-left: 7.5%;
             margin-right: 7.5%;
+            overflow-y: scroll;
         }
 
         .div-table-row {
@@ -205,7 +222,7 @@
         .div-table-col {
             float: left;
             display: table-column;
-            width:50%;
+            width: 50%;
         }
     </style>
 </head>
@@ -214,8 +231,8 @@
 
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;"></canvas>
 
-    <div id="scrollable" class="floating">
-        <div class="div-table" id="mainTable" style="top:50vh;">
+    <div id="scrollable" class="floating" style="margin-top:50vh;">
+        <div class="div-table" id="mainTable">
             <div class="div-table-row" style="height:80vh;">
                 <p>some text about this project here</p>
             </div>
