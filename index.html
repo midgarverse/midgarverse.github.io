@@ -59,8 +59,8 @@
 
         scene.add(plight);
 
-        scene.background = new THREE.Color(0x000000);
-        scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+        scene.background = new THREE.Color(0x222222);
+        scene.fog = new THREE.FogExp2(0x222222, 0.025);
 
         const geometry = new THREE.TorusBufferGeometry(2, 0.06, 100, 100);
 
@@ -85,7 +85,7 @@
             radius = 200;
         var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
         gradient.addColorStop(0, 'rgb(50,50,50)');
-        gradient.addColorStop(0.5, 'black');
+        gradient.addColorStop(0.5, 'rgb(34,34,34)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 500, 1500);
         var texture = new THREE.Texture(texture);
@@ -151,8 +151,8 @@
             var logo = document.getElementById("logo");
             var l4 = 2400;
             var l3 = 1800;
-            var l2 = 1400;
-            var l1 = 1000;
+            var l2 = 1000;
+            var l1 = 500;
 
             if (document.documentElement.scrollTop > l4) {
                 var interp = ((document.documentElement.scrollTop - l3) / (l4 - l3));
