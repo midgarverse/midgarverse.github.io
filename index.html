@@ -10,8 +10,7 @@
           "imports": {
             "three": "https://unpkg.com/three/build/three.module.js",
             "GLTFLoader":"https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js",
-            "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js",
-            "GUI":"https://unpkg.com/dat.gui@0.7.6/build/dat.gui.min.js"
+            "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js"
           }
         }
     </script>
@@ -44,7 +43,7 @@
         let ticking = false;
         let particles;
 
-        const plight = new THREE.PointLight(0xfffcfa, 1, 50, 0.05);
+        const plight = new THREE.PointLight(0xfffcfa, 0.8, 50, 0.05);
         plight.castShadow = true;
         plight.shadow.mapSize.width = 2048;
         plight.shadow.mapSize.height = 2048;
@@ -53,8 +52,8 @@
         plight.shadow.focus = 1
         plight.shadow.bias = -0.002;
         plight.position.set(0, 4, 0);
-
         scene.add(plight);
+
 
 
         const particleNum = 30000;
@@ -237,6 +236,7 @@
                     logo.style.width = "20vw";
                     logo.style.marginTop = "12px";
                     logo.style.marginLeft = "2vw";
+                    plight.intensity = 0.85;
 
 
                     cameraGroup.position.set(0, 0, 0)
@@ -246,6 +246,7 @@
                         logo.style.width = 40 - (20 * interp) + "vw";
                         logo.style.marginTop = 54 - (30 * interp) + "px";
                         logo.style.marginLeft = 12 - (10 * interp) + "vw";
+                        plight.intensity = 0.65 + 0.2 * interp;
 
 
                         cameraGroup.position.set(0, 3 * (1 - interp), 0)
@@ -255,6 +256,7 @@
                             logo.style.width = 60 - (20 * interp) + "vw";
                             logo.style.marginTop = 72 - (18 * interp) + "px";
                             logo.style.marginLeft = 20 - (8 * interp) + "vw";
+                            plight.intensity = 0.5 + 0.15 * interp;
 
 
                             cameraGroup.position.set(0, 3, 0)
@@ -262,7 +264,7 @@
                             logo.style.width = "60vw";
                             logo.style.marginTop = "72px";
                             logo.style.marginLeft = "20vw";
-
+                            plight.intensity = 0.5;
 
                             cameraGroup.position.set(0, 3, 0)
                         }
@@ -305,6 +307,7 @@
             }
             offset += 0.05 * tempOffset;
             var camGPosX = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
+            var camGPosZ = 3 - 6.2832 * cursor.x + dir * time * 0.1 + offset;
             tempOffset *= 0.95;
             var camGPosY = -1.25 - 3 * cursor.y
 
