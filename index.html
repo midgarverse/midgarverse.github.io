@@ -152,17 +152,17 @@
         function scrollFunction() {
             var logo = document.getElementById("logo");
             if (document.body.scrollTop > 2000 || document.documentElement.scrollTop > 2000) {
-                logo.style.width = "21vh";
-                logo.style.marginTop = "0vh";
+                logo.style.width = "21vw";
+                logo.style.marginTop = "0px";
             } else {
                 if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
                     var interp = ((document.documentElement.scrollTop/1000)-1);
-                    logo.style.width = 21*(2-interp)+"vh";
-                    logo.style.marginTop = 7*(1-interp)+"vh";
+                    logo.style.width = 21*(2-interp)+"vw";
+                    logo.style.marginTop = 60*(1-interp)+"px";
                 }
                 else {
-                    logo.style.width = "42vh";
-                    logo.style.marginTop = "7vh";
+                    logo.style.width = "42vw";
+                    logo.style.marginTop = "60px";
                 }
             }
         }
@@ -220,6 +220,7 @@
 
         html {
             scroll-behavior: smooth;
+   min-height: 100vh;
         }
 
         body {
@@ -285,7 +286,7 @@
         zIndex="5555">
         <div class="div-table-row" style="width:100vw; margin: 0%;" zIndex="26">
             <div class="div-table-col"><img src="./images/logo.png" id="logo"
-                    style="width:42vw; margin-top:7vh; margin-left:3vh;"></div>
+                    style="width:42vw; margin-top:60px; margin-left:24px;"></div>
             <div class="div-table-col">ROADMAP</div>
             <div class="div-table-col" style="width:19vw; margin-top:7vh;">OUR TEAM</div>
             <div class="div-table-col" style="width:19vw; margin-top:7vh;">THE GAME</div>
