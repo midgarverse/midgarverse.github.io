@@ -9,17 +9,17 @@
         {
           "imports": {
             "three": "https://unpkg.com/three/build/three.module.js",
-            "OrbitControls":"https://unpkg.com/three/examples/jsm/controls/OrbitControls.js",
             "GLTFLoader":"https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js",
-            "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js"
+            "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js",
+            "GUI":"https://unpkg.com/three/examples/js/libs/dat.gui.min.js"
           }
         }
     </script>
     <script type="module">
         import * as THREE from "three";
-        import { OrbitControls } from "OrbitControls";
         import { GLTFLoader } from "GLTFLoader";
         import { OutlineEffect } from "OutlineEffect";
+        import { GUI } from "GUI";
         const scene = new THREE.Scene();
 
         const cam2Group = new THREE.Group();
@@ -29,15 +29,12 @@
         cameraGroup.add(camera);
         scene.add(cam2Group);
 
-        const bal = new THREE.SphereGeometry(0.0625, 32, 16);
-        const ball = new THREE.Mesh(bal, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        const ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
         // scene.add(ball);
 
         const canvas = document.querySelector('canvas.webgl');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
-        const table = document.querySelector('div.floating');
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -46,8 +43,9 @@
 
         let lastKnownScr = 0;
         let ticking = false;
+        let particles;
 
-        const plight = new THREE.PointLight(0xffefdf, 1, 50, 0.05);
+        const plight = new THREE.PointLight(0xfffcfa, 1, 50, 0.05);
         plight.castShadow = true;
         plight.shadow.mapSize.width = 2048;
         plight.shadow.mapSize.height = 2048;
@@ -59,10 +57,56 @@
 
         scene.add(plight);
 
-        scene.background = new THREE.Color(0x222222);
-        scene.fog = new THREE.FogExp2(0x222222, 0.025);
 
-        const geometry = new THREE.TorusBufferGeometry(2, 0.06, 100, 100);
+        const particleNum = 30000;
+        const maxRange = 20;
+        const minRange = 10;
+
+        const onResize = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        }
+
+        let points = [];
+
+        for (let i = 0; i < particleNum; i++) {
+            const x = (0.5 - Math.random()) * maxRange;
+            const y = (0.5 - Math.random()) * maxRange;
+            const z = (0.5 - Math.random()) * maxRange;
+            const particle = new THREE.Vector3(x, y, z);
+            points.push(particle);
+        }
+        let pointGeometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        let tLoader = new THREE.TextureLoader();
+        tLoader.load('./images/snow.png', function (texture) {
+            const pointMaterial = new THREE.PointsMaterial({
+                size: 0.03,
+                vertexColors: false,
+                map: texture,
+                transparent: true,
+                fog: true,
+                depthWrite: false
+            });
+
+            particles = new THREE.Points(pointGeometry, pointMaterial);
+            particles.geometry.velocities = velocities;
+
+            scene.add(particles);
+        });
+
+        const velocities = [];
+        for (let i = 0; i < particleNum; i++) {
+            const x = (Math.random() * 6 - 3) * 0.1;
+            const y = (Math.random() * 10 + 3) * - 0.05;
+            const z = (Math.random() * 6 - 3) * 0.1;
+            const particle = new THREE.Vector3(x, y, z);
+            velocities.push(particle);
+        }
 
         const colors = new Uint8Array(10);
 
@@ -84,8 +128,12 @@
             outerRadius = 200,
             radius = 200;
         var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
-        gradient.addColorStop(0, 'rgb(50,50,50)');
-        gradient.addColorStop(0.5, 'rgb(34,34,34)');
+
+        scene.background = new THREE.Color(0x222222);
+        scene.fog = new THREE.FogExp2(0x222222, 0.035);
+        gradient.addColorStop(0, 'rgb(250,250,250)');
+        gradient.addColorStop(0.1, 'rgb(234,234,234)');
+
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 500, 1500);
         var texture = new THREE.Texture(texture);
@@ -125,6 +173,28 @@
 
         function animate() {
 
+            var time = uniTime * performance.now() * 0.001; if (null == particles) return;
+            const posArr = particles.geometry.getAttribute('position');
+            for (var i = 0; i < posArr.count; i++) {
+
+                vertex.fromBufferAttribute(posArr, i);
+
+                const x = i * 3;
+                const y = i * 3 + 1;
+                const z = i * 3 + 2;
+
+                const velX = Math.sin(time * 0.001 * velocities[i].x) * 0.1;
+                const velZ = Math.cos(time * 0.0015 * velocities[i].z) * 0.1;
+
+                vertex.x += velX;
+                vertex.y += velocities[i].y;
+                vertex.z += velZ;
+
+                if (vertex.y < -0.5 * minRange) {
+                    vertex.y = minRange;
+                }
+
+            }
             requestAnimationFrame(animate);
             render();
         }
@@ -155,7 +225,7 @@
             var l1 = 500;
 
             if (document.documentElement.scrollTop > l4) {
-                var interp = ((document.documentElement.scrollTop - l4) / (l4 - l3));
+                var interp = ((document.documentElement.scrollTop - l4) / (l4));
                 logo.style.width = "20vw";
                 logo.style.marginTop = "12px";
                 logo.style.marginLeft = "2vw";
@@ -164,7 +234,7 @@
                 cameraGroup.position.set(0, 0, 0)
             } else {
                 if (document.documentElement.scrollTop > l3) {
-                    var interp = ((document.documentElement.scrollTop - l3) / (l3 - l2));
+                    var interp = ((document.documentElement.scrollTop - l3) / (l4 - l3));
                     logo.style.width = "20vw";
                     logo.style.marginTop = "12px";
                     logo.style.marginLeft = "2vw";
@@ -173,7 +243,7 @@
                     cameraGroup.position.set(0, 0, 0)
                 } else {
                     if (document.documentElement.scrollTop > l2) {
-                        var interp = ((document.documentElement.scrollTop - l2) / (l2 - l1));
+                        var interp = ((document.documentElement.scrollTop - l2) / (l3 - l2));
                         logo.style.width = 40 - (20 * interp) + "vw";
                         logo.style.marginTop = 54 - (30 * interp) + "px";
                         logo.style.marginLeft = 12 - (10 * interp) + "vw";
@@ -203,10 +273,18 @@
         }
 
         const uniTime = 1;
+        const vertex = new THREE.Vector3();
+        var offset = 0;
+        var tempOffset = 0;
+        var jankCd = 1;
+        var oldTime = uniTime * performance.now() * 0.001;
+        var dir = 1;
 
         function render() {
-            var time = uniTime * performance.now() * 0.001;
-            var delta = performance.delta;
+            var time = performance.now() * 0.001;
+            var delta = time - oldTime;
+            oldTime = time;
+            jankCd -= delta;
             var docLen = document.height;
 
             var proportion = (camPositionsX.length) * window.scrollY / (18000 * 1.1 - window.innerHeight);
@@ -219,7 +297,16 @@
             cam2Group.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
-            var camGPosX = 3 + 6.2832 * cursor.x + time * 0.05
+            if (tempOffset <= 0.01 && jankCd < 0) {
+                if (Math.random() > 0.995) {
+                    tempOffset += (2 * Math.random() - 1) * 6.2832;
+                    jankCd = 3;
+                    dir *= -1;
+                }
+            }
+            offset += 0.05 * tempOffset;
+            var camGPosX = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
+            tempOffset *= 0.95;
             var camGPosY = -1.25 - 3 * cursor.y
 
             camera.position.set(3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
@@ -227,9 +314,39 @@
 
             effect.render(scene, camera);
 
+
+
+            particles.geometry.verticesNeedUpdate = true;
+
         }
 
+        scrollFunction();
         animate();
+
+
+
+        const parameters = {
+            intensity: 0.25,
+            light_posX: 0,
+            light_posY: 4,
+            light_posZ: 0,
+
+        };
+
+        function update() {
+
+            // plight.Color = parameters.threshold;
+            plight.posX = parameters.light_posX;
+            plight.posY = parameters.light_posY;
+            plight.posZ = parameters.light_posZ;
+
+        }
+
+        const gui = new GUI();
+        gui.add(parameters, 'intensity', 0, 1, 0.01).onChange(update);
+        gui.add(parameters, 'light_posX', -20, 20, 0.1).onChange(update);
+        gui.add(parameters, 'light_posY', 0, 20, 0.1).onChange(update);
+        gui.add(parameters, 'light_posZ', -20, 20, 0.1).onChange(update);
 
 
     </script>
@@ -328,6 +445,7 @@
                 <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
                 <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                     explore and fight their way to fame and glory.</p>
+                <p></p>
             </div>
             <div style="margin-top:2900px;">
                 <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
@@ -361,7 +479,7 @@
                 </p>
             </div>
             <div style="margin-top:2900px;">
-                <h2>Trample armies and topple kingdoms for the glory of Odin</h2>
+                <h2>Topple Kingdoms and Empires and trample their armies for the glory of Odin</h2>
                 <p>It is a time of change and conflict for the Vikings. <br>
                     The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. The Volvas
                     have been shown the death of our gods. <br>
