@@ -128,9 +128,9 @@
             requestAnimationFrame(animate);
             render();
         }
-        const camPositionsX = [0, 0, -1.8, -3.6, -3.6, -3.6, -4, -2.65, -2.65, -2.65, -3, -3.15, -3.15, -3.15, -1, 2, 2, 2, 3, 2.5, 2.5];
-        const camPositionsY = [1.4, 1.4, 1.7, 1.5, 1.5, 1.5, 1.65, 1.2, 1.2, 1.2, 1.5, 1.3, 1.3, 1.3, 1.6, 1.4, 1.4, 1.4, 1.7, 1.5, 1.5];
-        const camPositionsZ = [0, 0, -1.8, -3.6, -3.6, -3.6, -0.5, 2.6, 2.6, 2.6, 1, -1, -1, -1, 2.5, 1.9, 1.9, 1.9, 0, -2.5, -2.5];
+        const camPositionsX = [0,0,-3.6,-3.6,-2.65,-2.65,-3.15,-3.15,-2.65,-2.65,2,2,2.5,2.5,];
+        const camPositionsY = [1.4,1.4,1.5,1.5,1.2,1.2,1.3,1.3,1.2,1.2,1.4,1.4,1.5,1.5,];
+        const camPositionsZ = [0,0,-3.6,-3.6,2.6,2.6,-1,-1,2.6,2.6,1.9,1.9,-2.5,-2.5,];
 
         const scrollsY = [50, 50, 120, 120, 190, 190, 260, 260, 330, 330];
 
@@ -200,7 +200,7 @@
 
         body {
             margin: 0px;
-            height: 11200px;
+            height: 11500px;
         }
 
         .floating {
@@ -255,26 +255,26 @@
 
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;" zIndex="-1"></canvas>
     
-    <nav class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;" zIndex="5555">
+    <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;" zIndex="5555">
         <div class="div-table" id="mainTable" style="width:100vw; margin: 0%;" zIndex="26">
             <div class="div-table-row">
-                <div class="div-table-col"><img src="./images/logo.png" style="width:28vw; margin-top:0vh;"></div>
-                <div class="div-table-col" style="width:18vw; margin-top:5vh;">ROADMAP</div>
-                <div class="div-table-col" style="width:18vw; margin-top:5vh;">OUR TEAM</div>
-                <div class="div-table-col" style="width:18vw; margin-top:5vh;">THE GAME</div>
-                <div class="div-table-col" style="width:18vw; margin-top:5vh;">CONNECT</div>
+                <div class="div-table-col"><img src="./images/logo.png" style="width:21vw; margin-top:3vh; margin-left:3vh;"></div>
+                <div class="div-table-col" style="width:19vw; margin-top:7vh;">ROADMAP</div>
+                <div class="div-table-col" style="width:19vw; margin-top:7vh;">OUR TEAM</div>
+                <div class="div-table-col" style="width:19vw; margin-top:7vh;">THE GAME</div>
+                <div class="div-table-col" style="width:19vw; margin-top:7vh;">CONNECT</div>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div id="scrollable" class="floating">
+    <div id="scrollable" class="floating" style="text-align:center; top:12vh; margin-top:12vh; padding-top:12vh; overflow:auto">
         <div id="mainTable">
-            <div style="margin-top:220vh;">
+            <div style="margin-top:200vh;">
                 <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
                 <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                     explore and fight their way to fame and glory.</p>
             </div>
-            <div style="margin-top:130vh;">
+            <div style="margin-top:128vh;">
                 <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
                 <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
                     collaborative play.<br>
@@ -283,7 +283,7 @@
                     Owned land provides further opportunity to foster relationships and boost trade income and military
                     stability.</p>
             </div>
-            <div style="margin-top:130vh;">
+            <div style="margin-top:128vh;">
                 <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
                 </h2>
                 <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
@@ -291,7 +291,7 @@
                     Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
                     Viking's fame and wealth</p>
             </div>
-            <div style="margin-top:130vh;">
+            <div style="margin-top:128vh;">
                 <h2>Secure your land, gather its resources, and fortify your position</h2>
                 <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
                     and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
@@ -305,7 +305,7 @@
                     accessibility of rare materials and generating passive income for landowners.
                 </p>
             </div>
-            <div style="margin-top:130vh;">
+            <div style="margin-top:128vh;">
                 <h2>Trample armies and topple kingdoms for the glory of Odin</h2>
                 <p>It is a time of change and conflict for the Vikings. The followers of the Old Ways are no longer the
                     only voice.<br>
