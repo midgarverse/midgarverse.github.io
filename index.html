@@ -128,9 +128,9 @@
             requestAnimationFrame(animate);
             render();
         }
-        const camPositionsX = [0,0,-3.6,-3.6,-2.65,-2.65,-3.15,-3.15,-2.65,-2.65,2,2,2.5,2.5,];
-        const camPositionsY = [1.4,1.4,1.5,1.5,1.2,1.2,1.3,1.3,1.2,1.2,1.4,1.4,1.5,1.5,];
-        const camPositionsZ = [0,0,-3.6,-3.6,2.6,2.6,-1,-1,2.6,2.6,1.9,1.9,-2.5,-2.5,];
+        const camPositionsX = [0, 0, -3.6, -3.6, -2.65, -2.65, -3.15, -3.15, 2, 2, 2.5, 2.5,];
+        const camPositionsY = [1.4, 1.4, 1.5, 1.5, 1.2, 1.2, 1.3, 1.3, 1.2, 1.2, 1.4, 1.4, 1.5, 1.5,];
+        const camPositionsZ = [0, 0, -3.6, -3.6, 2.6, 2.6, -1, -1, 1.9, 1.9, -2.5, -2.5,];
 
         const scrollsY = [50, 50, 120, 120, 190, 190, 260, 260, 330, 330];
 
@@ -147,6 +147,26 @@
             return before + (after - before) * atPoint;
         };
 
+        window.onscroll = function () { scrollFunction() };
+
+        function scrollFunction() {
+            var logo = document.getElementById("logo");
+            if (document.body.scrollTop > 2000 || document.documentElement.scrollTop > 2000) {
+                logo.style.width = "21vh";
+                logo.style.marginTop = "0vh";
+            } else {
+                if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+                    var interp = ((document.documentElement.scrollTop/1000)-1);
+                    logo.style.width = 21*(2-interp)+"vh";
+                    logo.style.marginTop = 7*(1-interp)+"vh";
+                }
+                else {
+                    logo.style.width = "42vh";
+                    logo.style.marginTop = "7vh";
+                }
+            }
+        }
+
         const uniTime = 1;
 
         function render() {
@@ -155,7 +175,7 @@
 
             // camera.position.set(0,2+1*Math.cos(0.025*time),7+3*Math.cos(0.025*time))
 
-            var proportion = (camPositionsX.length) * window.scrollY / (12100 - window.innerHeight);
+            var proportion = (camPositionsX.length) * window.scrollY / (9250 - window.innerHeight);
             var index = Math.floor(proportion);
             var position = proportion - index;
             var posX = lerp(camPositionsX[index], camPositionsX[(index + 1 == camPositionsX.length ? index : index + 1)], position);
@@ -172,7 +192,7 @@
             camera.position.set(3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
             camera.lookAt(posX, posY, posZ);
 
-            var tabProportion = (camPositionsX.length) * window.scrollY / (12500 - window.innerHeight);
+            var tabProportion = (camPositionsX.length) * window.scrollY / (9250 - window.innerHeight);
             var tabIndex = Math.floor(tabProportion);
             var tabPosition = tabProportion - tabIndex;
             table.style.left = 0 + 'vw';
@@ -198,9 +218,13 @@
             /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0px;
-            height: 11500px;
+            height: 9000px;
         }
 
         .floating {
@@ -247,6 +271,8 @@
             float: left;
             display: table-column;
             color: #fff;
+            width: 19vw;
+            margin-top: 7vh;
         }
     </style>
 </head>
@@ -254,27 +280,28 @@
 <body>
 
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;" zIndex="-1"></canvas>
-    
-    <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;" zIndex="5555">
-        <div class="div-table" id="mainTable" style="width:100vw; margin: 0%;" zIndex="26">
-            <div class="div-table-row">
-                <div class="div-table-col"><img src="./images/logo.png" style="width:21vw; margin-top:3vh; margin-left:3vh;"></div>
-                <div class="div-table-col" style="width:19vw; margin-top:7vh;">ROADMAP</div>
-                <div class="div-table-col" style="width:19vw; margin-top:7vh;">OUR TEAM</div>
-                <div class="div-table-col" style="width:19vw; margin-top:7vh;">THE GAME</div>
-                <div class="div-table-col" style="width:19vw; margin-top:7vh;">CONNECT</div>
-            </div>
+
+    <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
+        zIndex="5555">
+        <div class="div-table-row" style="width:100vw; margin: 0%;" zIndex="26">
+            <div class="div-table-col"><img src="./images/logo.png" id="logo"
+                    style="width:42vw; margin-top:7vh; margin-left:3vh;"></div>
+            <div class="div-table-col">ROADMAP</div>
+            <div class="div-table-col" style="width:19vw; margin-top:7vh;">OUR TEAM</div>
+            <div class="div-table-col" style="width:19vw; margin-top:7vh;">THE GAME</div>
+            <div class="div-table-col" style="width:19vw; margin-top:7vh;">CONNECT</div>
         </div>
     </div>
 
-    <div id="scrollable" class="floating" style="text-align:center; top:12vh; margin-top:12vh; padding-top:12vh; overflow:auto">
+    <div id="scrollable" class="floating"
+        style="text-align:center; top:12vh; margin-top:12vh; padding-top:12vh; overflow:scroll">
         <div id="mainTable">
-            <div style="margin-top:200vh;">
+            <div style="margin-top:1500px;">
                 <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
                 <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                     explore and fight their way to fame and glory.</p>
             </div>
-            <div style="margin-top:128vh;">
+            <div style="margin-top:1500px;">
                 <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
                 <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
                     collaborative play.<br>
@@ -283,7 +310,7 @@
                     Owned land provides further opportunity to foster relationships and boost trade income and military
                     stability.</p>
             </div>
-            <div style="margin-top:128vh;">
+            <div style="margin-top:1500px;">
                 <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
                 </h2>
                 <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
@@ -291,7 +318,7 @@
                     Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
                     Viking's fame and wealth</p>
             </div>
-            <div style="margin-top:128vh;">
+            <div style="margin-top:1500px;">
                 <h2>Secure your land, gather its resources, and fortify your position</h2>
                 <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
                     and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
@@ -305,11 +332,12 @@
                     accessibility of rare materials and generating passive income for landowners.
                 </p>
             </div>
-            <div style="margin-top:128vh;">
+            <div style="margin-top:1500px;">
                 <h2>Trample armies and topple kingdoms for the glory of Odin</h2>
-                <p>It is a time of change and conflict for the Vikings. The followers of the Old Ways are no longer the
-                    only voice.<br>
-                    The expansion of Christian kingdoms threatens our ways. The Sages have seen the death of our gods.
+                <p>It is a time of change and conflict for the Vikings. <br>
+                    The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. The Volvas
+                    have been shown the death of our gods. <br>
+                    We must fight and die with glory. That is the Viking way.
                 </p>
             </div>
         </div>
