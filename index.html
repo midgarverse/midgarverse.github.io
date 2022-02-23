@@ -149,18 +149,18 @@
 
         function scrollFunction() {
             var logo = document.getElementById("logo");
-            if (document.body.scrollTop > 2000 || document.documentElement.scrollTop > 2000) {
+            if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
                 logo.style.width = "21vw";
-                logo.style.marginTop = "0px";
+                logo.style.marginTop = "12px";
             } else {
-                if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-                    var interp = ((document.documentElement.scrollTop / 1000) - 1);
+                if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+                    var interp = ((document.documentElement.scrollTop / 500) - 1);
                     logo.style.width = 21 * (2 - interp) + "vw";
-                    logo.style.marginTop = 60 * (1 - interp) + "px";
+                    logo.style.marginTop = 60 * (1.2 - interp) + "px";
                 }
                 else {
                     logo.style.width = "42vw";
-                    logo.style.marginTop = "60px";
+                    logo.style.marginTop = "72px";
                 }
             }
         }
@@ -227,21 +227,21 @@
 
         h1 {
             font-family: 'Inknut Antiqua';
-            font-size: 1vw;
+            font-size: 2vh;
             position: relative;
             color: #fff;
         }
 
         h2 {
             font-family: 'Inknut Antiqua';
-            font-size: .75vw;
+            font-size: 1.5vh;
             position: relative;
             color: #fff;
         }
 
         p {
             position: relative;
-            font-size: .6vw;
+            font-size: 1.2vh;
             line-height: 2vh;
             color: #fff;
         }
@@ -263,7 +263,7 @@
             float: left;
             display: table-column;
             color: #fff;
-            width: 19vw;
+            width: 33vw;
             margin-top: 7vh;
         }
     </style>
@@ -272,18 +272,17 @@
 <body>
 
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;" zIndex="-1"></canvas>
-
-    <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
+    <img src="./images/logo.png" id="logo"
+    style="position:fixed; top:0vh; left:0vw; text-align: center; overflow-y: hidden; width:42vw; margin-top:72px; margin-left:24px;" zIndex="5555">
+    <!-- <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
         zIndex="5555">
         <div class="div-table-row" style="width:100vw; margin: 0%;" zIndex="26">
             <div class="div-table-col"><img src="./images/logo.png" id="logo"
-                    style="width:42vw; margin-top:60px; margin-left:24px;"></div>
+                    style="width:42vw; margin-top:60px; margin-left:24px;"/></div>
             <div class="div-table-col">ROADMAP</div>
-            <div class="div-table-col" style="width:19vw; margin-top:7vh;">OUR TEAM</div>
-            <div class="div-table-col" style="width:19vw; margin-top:7vh;">THE GAME</div>
-            <div class="div-table-col" style="width:19vw; margin-top:7vh;">CONNECT</div>
+            <div class="div-table-col">CONNECT</div>
         </div>
-    </div>
+    </div> -->
 
     <div id="scrollable" class="floating"
         style="text-align:center; top:12vh; margin-top:12vh; padding-top:12vh; overflow:scroll">
