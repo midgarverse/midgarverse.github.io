@@ -11,7 +11,7 @@
             "three": "https://unpkg.com/three/build/three.module.js",
             "GLTFLoader":"https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js",
             "OutlineEffect":"https://unpkg.com/three/examples/jsm/effects/OutlineEffect.js",
-            "GUI":"https://unpkg.com/three/examples/js/libs/dat.gui.min.js"
+            "GUI":"https://unpkg.com/dat.gui@0.7.6/build/dat.gui.min.js"
           }
         }
     </script>
@@ -19,7 +19,6 @@
         import * as THREE from "three";
         import { GLTFLoader } from "GLTFLoader";
         import { OutlineEffect } from "OutlineEffect";
-        import { GUI } from "GUI";
         const scene = new THREE.Scene();
 
         const cam2Group = new THREE.Group();
@@ -50,7 +49,7 @@
         plight.shadow.mapSize.width = 2048;
         plight.shadow.mapSize.height = 2048;
         plight.shadow.camera.near = 0.1;
-        plight.shadow.camera.far = 40;
+        plight.shadow.camera.far = 30;
         plight.shadow.focus = 1
         plight.shadow.bias = -0.002;
         plight.position.set(0, 4, 0);
@@ -117,7 +116,7 @@
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
         gradientMap.needsUpdate = true;
 
-        const floorgeo = new THREE.PlaneBufferGeometry(200, 200, 1, 1);
+        const floorgeo = new THREE.CircleGeometry(200, 16);
 
         var texture = document.createElement('canvas');
         texture.width = texture.height = 500;
@@ -129,10 +128,10 @@
             radius = 200;
         var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
 
-        scene.background = new THREE.Color(0x222222);
-        scene.fog = new THREE.FogExp2(0x222222, 0.035);
-        gradient.addColorStop(0, 'rgb(250,250,250)');
-        gradient.addColorStop(0.1, 'rgb(234,234,234)');
+        scene.background = new THREE.Color(0x080a0f);
+        scene.fog = new THREE.FogExp2(0x080a0f, 0.035);
+        gradient.addColorStop(0, 'rgb(200,200,200)');
+        gradient.addColorStop(0.1, 'rgb(134,134,134)');
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 500, 1500);
@@ -323,30 +322,28 @@
         scrollFunction();
         animate();
 
+        // const parameters = {
+        //     intensity: 0.25,
+        //     light_posX: 0,
+        //     light_posY: 4,
+        //     light_posZ: 0,
 
+        // };
 
-        const parameters = {
-            intensity: 0.25,
-            light_posX: 0,
-            light_posY: 4,
-            light_posZ: 0,
+        // function update() {
 
-        };
+        //     // plight.Color = parameters.threshold;
+        //     plight.posX = parameters.light_posX;
+        //     plight.posY = parameters.light_posY;
+        //     plight.posZ = parameters.light_posZ;
 
-        function update() {
+        // }
 
-            // plight.Color = parameters.threshold;
-            plight.posX = parameters.light_posX;
-            plight.posY = parameters.light_posY;
-            plight.posZ = parameters.light_posZ;
-
-        }
-
-        const gui = new GUI();
-        gui.add(parameters, 'intensity', 0, 1, 0.01).onChange(update);
-        gui.add(parameters, 'light_posX', -20, 20, 0.1).onChange(update);
-        gui.add(parameters, 'light_posY', 0, 20, 0.1).onChange(update);
-        gui.add(parameters, 'light_posZ', -20, 20, 0.1).onChange(update);
+        // const gui = new GUI();
+        // gui.add(parameters, 'intensity', 0, 1, 0.01).onChange(update);
+        // gui.add(parameters, 'light_posX', -20, 20, 0.1).onChange(update);
+        // gui.add(parameters, 'light_posY', 0, 20, 0.1).onChange(update);
+        // gui.add(parameters, 'light_posZ', -20, 20, 0.1).onChange(update);
 
 
     </script>
