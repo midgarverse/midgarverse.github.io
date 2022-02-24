@@ -355,8 +355,8 @@
             cam2Group.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
-            var camGPosX = 3 - 6.2832 * cursor.x + time * (1/Math.max(1,moveTO)) * 0.1 + offset;
-            var camGPosZ = 3 - 6.2832 * cursor.x + time * (1/Math.max(1,moveTO)) * 0.1 + offset;
+            var camGPosX = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
+            var camGPosZ = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
             var camGPosY = -1.25 - 3 * cursor.y
 
             camera.position.set(dir * 3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
@@ -369,7 +369,7 @@
 
         function animate() {
 
-            var time = performance.now() * 0.001; 
+            var time = performance.now() * 0.001;
             if (null == particles) return;
             const posArr = particles.geometry.getAttribute('position');
             for (var i = 0; i < posArr.count; i++) {
@@ -452,15 +452,12 @@
 
         .div-table {
             display: table;
-            width: 85%;
-            margin: 7.5%;
             overflow-y: hidden;
         }
 
         .div-table-row {
             display: table-row;
             clear: both;
-            margin: 7.5%;
         }
 
         .div-table-col {
@@ -474,58 +471,57 @@
 
 <body>
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;" zIndex="-1"></canvas>
-    <img src="./images/logo.png" id="logo" style="position:fixed; overflow-y: hidden; margin-top:72px; margin-left:20vw; width:60vw;" zIndex="5555">
-    <div class="div-table">
-        <!-- <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
+    <img src="./images/logo.png" id="logo"
+        style="position:fixed; overflow-y: hidden; margin-top:72px; margin-left:20vw; width:60vw;" zIndex="5555">
+    <!-- <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
         zIndex="5555">
     </div> -->
-        <div class="div-table-row" id="content" style="overflow-x:hidden; text-align:center;">
-            <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1080px; max-width:90vw;">
-                <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
-                <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
-                    explore and fight their way to fame and glory.</p>
-            </div>
-            <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
-                <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
-                <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
-                    collaborative play.<br>
-                    Via Trade Contracts, Vikings can control the supply and demand of commodities for kingdoms and
-                    empires well beyond the borders of Viking Scandinavia.<br>
-                    Owned land provides further opportunity to foster relationships and boost trade income and military
-                    stability.</p>
-            </div>
-            <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
-                <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
-                </h2>
-                <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
-                    your own vessel as you set forth to unchartered waters.<br>
-                    Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
-                    Viking's fame and wealth</p>
-            </div>
-            <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
-                <h2>Secure your land, gather its resources, and fortify your position</h2>
-                <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
-                    and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
-                    resources.<br>
-                    Moreover, each land has a number of construction slots which can be developed to suit the owner's
-                    needs.<br>
-                    Each type of construction has its own aesthetics and benefits to the landowner.<br>
-                    Land can be gained as a conquest of enemy lands following raids and battles, as a discovery when
-                    exploring new lands to settle, or as part of a trade arrangement with foreign kingdoms.<br>
-                    Rental contracts allow Vikings to lease and rent land from other Vikings, increasing the
-                    accessibility of rare materials and generating passive income for landowners.
-                </p>
-            </div>
-            <div
-                style="margin-left:auto; margin-right:auto; margin-top:800px; margin-bottom:800px; width:1080px; max-width:90vw;">
-                <h2>Topple Kingdoms and Empires and trample their armies under Odin's banner</h2>
-                <p>It is a time of change and conflict for the Vikings. <br>
-                    The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. <br>
-                    The Volvas have seen the death of our gods. <br>
-                    The time of swords and axes, the wolf blizzard and ragnarok are comming.<br>
-                    We must fight and die with glory. That is the Viking way.
-                </p>
-            </div>
+    <div id="content" style="overflow-x:hidden; text-align:center; margin-left:auto; margin-right:auto; ">
+        <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1080px; max-width:90vw;">
+            <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
+            <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
+                explore and fight their way to fame and glory.</p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
+            <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
+            <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
+                collaborative play.<br>
+                Via Trade Contracts, Vikings can control the supply and demand of commodities for kingdoms and
+                empires well beyond the borders of Viking Scandinavia.<br>
+                Owned land provides further opportunity to foster relationships and boost trade income and military
+                stability.</p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
+            <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
+            </h2>
+            <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
+                your own vessel as you set forth to unchartered waters.<br>
+                Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
+                Viking's fame and wealth</p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
+            <h2>Secure your land, gather its resources, and fortify your position</h2>
+            <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
+                and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
+                resources.<br>
+                Moreover, each land has a number of construction slots which can be developed to suit the owner's
+                needs.<br>
+                Each type of construction has its own aesthetics and benefits to the landowner.<br>
+                Land can be gained as a conquest of enemy lands following raids and battles, as a discovery when
+                exploring new lands to settle, or as part of a trade arrangement with foreign kingdoms.<br>
+                Rental contracts allow Vikings to lease and rent land from other Vikings, increasing the
+                accessibility of rare materials and generating passive income for landowners.
+            </p>
+        </div>
+        <div
+            style="margin-left:auto; margin-right:auto; margin-top:800px; margin-bottom:800px; width:1080px; max-width:90vw;">
+            <h2>Topple Kingdoms and Empires and trample their armies under Odin's banner</h2>
+            <p>It is a time of change and conflict for the Vikings. <br>
+                The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. <br>
+                The Volvas have seen the death of our gods. <br>
+                The time of swords and axes, the wolf blizzard and ragnarok are comming.<br>
+                We must fight and die with glory. That is the Viking way.
+            </p>
         </div>
     </div>
 </body>
