@@ -190,6 +190,11 @@
             cursor.y = event.clientY / window.innerHeight - 0.5
             moveTO = 10;
         })
+        window.addEventListener('touchmove', (event) => {
+            cursor.x = event.clientX / window.innerWidth - 0.5
+            // cursor.y = event.clientY / window.innerHeight - 0.5
+            moveTO = 10;
+        })
 
         function lerp(before, after, atPoint) {
             return before + (after - before) * atPoint;
