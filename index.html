@@ -192,7 +192,7 @@
         })
         window.addEventListener('touchmove', (event) => {
             cursor.x = event.clientX / window.innerWidth - 0.5
-            // cursor.y = event.clientY / window.innerHeight - 0.5
+            cursor.y = event.clientY / window.innerHeight - 0.5
             moveTO = 10;
         })
 
@@ -200,7 +200,7 @@
             return before + (after - before) * atPoint;
         };
 
-        // window.onscroll = function () { scrollFunction() };
+        window.onscroll = function () { scrollFunction() };
 
         function scrollFunction() {
             var logo = document.getElementById("logo");
