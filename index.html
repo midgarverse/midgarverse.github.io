@@ -169,33 +169,6 @@
 
         const effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
 
-        function animate() {
-
-            var time = uniTime * performance.now() * 0.001; if (null == particles) return;
-            const posArr = particles.geometry.getAttribute('position');
-            for (var i = 0; i < posArr.count; i++) {
-
-                vertex.fromBufferAttribute(posArr, i);
-
-                const x = i * 3;
-                const y = i * 3 + 1;
-                const z = i * 3 + 2;
-
-                const velX = Math.sin(time * 0.001 * velocities[i].x) * 0.1;
-                const velZ = Math.cos(time * 0.0015 * velocities[i].z) * 0.1;
-
-                vertex.x += velX;
-                vertex.y += velocities[i].y;
-                vertex.z += velZ;
-
-                if (vertex.y < -0.5 * minRange) {
-                    vertex.y = minRange;
-                }
-
-            }
-            requestAnimationFrame(animate);
-            render();
-        }
         const camPositionsX = [0, 0, 0, -3.6, -3.6, -2.65, -2.65, -3.15, -3.15, 2, 2, 2.5, 2.5,];
         const camPositionsY = [1.4, 1.4, 1.4, 1.5, 1.5, 1.2, 1.2, 1.3, 1.3, 1.2, 1.2, 1.4, 1.4, 1.5, 1.5,];
         const camPositionsZ = [0, 0, 0, -3.6, -3.6, 2.6, 2.6, -1, -1, 1.9, 1.9, -2.5, -2.5,];
@@ -208,9 +181,12 @@
         cursor.x = 0
         cursor.y = 0
 
+        var moveTO = 1;
+
         window.addEventListener('mousemove', (event) => {
             cursor.x = event.clientX / window.innerWidth - 0.5
             cursor.y = event.clientY / window.innerHeight - 0.5
+            moveTO = 10;
         })
 
         function lerp(before, after, atPoint) {
@@ -330,11 +306,10 @@
             }
         }
 
-        const uniTime = 1;
         const vertex = new THREE.Vector3();
         var offset = 0; var xO = 0; var yO = 0; var zO = 0;
         var tempOffset = 0; var xTO = 0; var yTO = 0; var zTO = 0;
-        var oldTime = uniTime * performance.now() * 0.001;
+        var oldTime = performance.now() * 0.001;
         var dir = 1;
         var interpIndex = 0;
         var steps = 360;
@@ -342,6 +317,7 @@
         function render() {
             var time = performance.now() * 0.001;
             var delta = time - oldTime;
+            moveTO -= delta;
             oldTime = time;
             var docLen = document.height;
             steps--;
@@ -372,15 +348,15 @@
             yTO *= 0.975;
             zO += 0.025 * zTO;
             zTO *= 0.975;
-            var posX = camRailX[interpIndex] + xTO; //lerp(camPositionsX[index], camPositionsX[(index + 1 == camPositionsX.length ? index : index + 1)], position);
-            var posY = camRailY[interpIndex] + yTO; //lerp(camPositionsY[index], camPositionsY[(index + 1 == camPositionsY.length ? index : index + 1)], position);
-            var posZ = camRailZ[interpIndex] + zTO; //lerp(camPositionsZ[index], camPositionsZ[(index + 1 == camPositionsZ.length ? index : index + 1)], position);
+            var posX = camRailX[interpIndex] + xTO;
+            var posY = camRailY[interpIndex] + yTO;
+            var posZ = camRailZ[interpIndex] + zTO;
 
             cam2Group.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
-            var camGPosX = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
-            var camGPosZ = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
+            var camGPosX = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
+            var camGPosZ = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
             var camGPosY = -1.25 - 3 * cursor.y
 
             camera.position.set(dir * 3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
@@ -388,37 +364,40 @@
 
             effect.render(scene, camera);
 
-
-
             particles.geometry.verticesNeedUpdate = true;
+        }
 
+        function animate() {
+
+            var time = performance.now() * 0.001;
+            if (null == particles) return;
+            const posArr = particles.geometry.getAttribute('position');
+            for (var i = 0; i < posArr.count; i++) {
+
+                vertex.fromBufferAttribute(posArr, i);
+
+                const x = i * 3;
+                const y = i * 3 + 1;
+                const z = i * 3 + 2;
+
+                const velX = Math.sin(time * 0.001 * velocities[i].x) * 0.1;
+                const velZ = Math.cos(time * 0.0015 * velocities[i].z) * 0.1;
+
+                vertex.x += velX;
+                vertex.y += velocities[i].y;
+                vertex.z += velZ;
+
+                if (vertex.y < -0.5 * minRange) {
+                    vertex.y = minRange;
+                }
+
+            }
+            requestAnimationFrame(animate);
+            render();
         }
 
         scrollFunction();
         animate();
-
-        // const parameters = {
-        //     intensity: 0.25,
-        //     light_posX: 0,
-        //     light_posY: 4,
-        //     light_posZ: 0,
-
-        // };
-
-        // function update() {
-
-        //     // plight.Color = parameters.threshold;
-        //     plight.posX = parameters.light_posX;
-        //     plight.posY = parameters.light_posY;
-        //     plight.posZ = parameters.light_posZ;
-
-        // }
-
-        // const gui = new GUI();
-        // gui.add(parameters, 'intensity', 0, 1, 0.01).onChange(update);
-        // gui.add(parameters, 'light_posX', -20, 20, 0.1).onChange(update);
-        // gui.add(parameters, 'light_posY', 0, 20, 0.1).onChange(update);
-        // gui.add(parameters, 'light_posZ', -20, 20, 0.1).onChange(update);
 
 
     </script>
@@ -439,7 +418,7 @@
 
         body {
             margin: 0px;
-            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: 100vh;
             height: 6000px;
             position: relative;
         }
@@ -452,21 +431,21 @@
 
         h1 {
             font-family: 'Inknut Antiqua';
-            font-size: 2.5vh;
+            font-size: 2.25vh;
             position: relative;
             color: #fff;
         }
 
         h2 {
             font-family: 'Inknut Antiqua';
-            font-size: 2.25vh;
+            font-size: 2vh;
             position: relative;
             color: #fff;
         }
 
         p {
             position: relative;
-            font-size: 2vh;
+            font-size: 1.75vh;
             line-height: 2vh;
             color: #fff;
         }
@@ -488,35 +467,23 @@
             float: left;
             display: table-column;
             color: #fff;
-            width: 33vw;
-            margin-top: 7vh;
+            min-width: 25vw;
         }
     </style>
 </head>
 
 <body>
-
     <canvas class="webgl" style="position:fixed; top:0vh; left:0vw;" zIndex="-1"></canvas>
     <img src="./images/logo.png" id="logo"
-        style="position:fixed; top:0vh; left:0vw; text-align: center; overflow-y: hidden; width:60vw; margin-top:72px; margin-left:20vw;"
+        style="position:fixed; vertical-align: top; overflow-y: hidden; margin-top:72px; margin-left:20vw; width:60vw;"
         zIndex="5555">
-    <div class="div-table-row" style="width:100vw; min-height: 100px; margin: 0%;" zIndex="26">
-        <div class="div-table-col"><img src="./images/logo.png" id="logo"
-                style="width:42vw; margin-top:60px; margin-left:24px;" /></div>
-        <div class="div-table-col">ROADMAP</div>
-        <div class="div-table-col">CONNECT</div>
-    </div>
-    <!-- <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
-        zIndex="5555">
-    </div> -->
-
-    <div id="content" style="overflow-x:hidden; text-align:center;">
-        <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1200px; max-width:90vw;">
+    <div id="content" style="overflow-x:hidden; text-align:center; margin-left:10vw; margin-right:10vw; ">
+        <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1080px; max-width:90vw;">
             <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
             <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                 explore and fight their way to fame and glory.</p>
         </div>
-        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
             <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
             <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
                 collaborative play.<br>
@@ -525,7 +492,7 @@
                 Owned land provides further opportunity to foster relationships and boost trade income and military
                 stability.</p>
         </div>
-        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
             <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
             </h2>
             <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
@@ -533,7 +500,7 @@
                 Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
                 Viking's fame and wealth</p>
         </div>
-        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1080px; max-width:90vw;">
             <h2>Secure your land, gather its resources, and fortify your position</h2>
             <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
                 and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
@@ -547,7 +514,8 @@
                 accessibility of rare materials and generating passive income for landowners.
             </p>
         </div>
-        <div style="margin-left:auto; margin-right:auto; margin-top:800px; margin-bottom:800px; width:1200px; max-width:90vw;">
+        <div
+            style="margin-left:auto; margin-right:auto; margin-top:800px; margin-bottom:800px; width:1080px; max-width:90vw;">
             <h2>Topple Kingdoms and Empires and trample their armies under Odin's banner</h2>
             <p>It is a time of change and conflict for the Vikings. <br>
                 The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. <br>
@@ -556,7 +524,6 @@
                 We must fight and die with glory. That is the Viking way.
             </p>
         </div>
-    </div>
     </div>
 </body>
 
