@@ -54,6 +54,9 @@
         plight.position.set(-0.5, 4, -0.5);
         scene.add(plight);
 
+        scene.background = new THREE.Color(0x181f25);
+        scene.fog = new THREE.FogExp2(0x181f25, 0.035);
+
         const particleNum = 5000;
         const maxRange = 18;
         const minRange = 2;
@@ -125,10 +128,9 @@
             radius = 200;
         var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
 
-        scene.background = new THREE.Color(0x0a0e14);
-        scene.fog = new THREE.FogExp2(0x0a0e14, 0.035);
-        gradient.addColorStop(0, 'rgb(200,200,200)');
-        gradient.addColorStop(0.1, 'rgb(134,134,134)');
+        gradient.addColorStop(0, 'rgb(150,150,150)');
+        gradient.addColorStop(0.06, 'rgb(150,150,150)');
+        gradient.addColorStop(0.12, 'rgb(24,31,37)');
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 500, 1500);
@@ -205,8 +207,8 @@
             var l5 = 2600;
             var l4 = 2200;
             var l3 = 1800;
-            var l2 = 1000;
-            var l1 = 500;
+            var l2 = 1200;
+            var l1 = 300;
 
             if (window.pageYOffset > l9) {
                 var interp = ((window.pageYOffset - l9) / (l10 - l9));
@@ -276,7 +278,7 @@
                                             logo.style.width = 40 - (20 * interp) + "vw";
                                             logo.style.marginTop = 54 - (30 * interp) + "px";
                                             logo.style.marginLeft = 12 - (10 * interp) + "vw";
-                                            plight.intensity = 0.65 + 0.2 * interp;
+                                            plight.intensity = 0.5 + 0.35 * interp;
 
                                             cameraGroup.position.set(0, 3 * (1 - interp), 0)
                                         } else {
@@ -285,14 +287,14 @@
                                                 logo.style.width = 60 - (20 * interp) + "vw";
                                                 logo.style.marginTop = 72 - (18 * interp) + "px";
                                                 logo.style.marginLeft = 20 - (8 * interp) + "vw";
-                                                plight.intensity = 0.5 + 0.15 * interp;
+                                                plight.intensity = 0.25 + 0.25 * interp;
 
                                                 cameraGroup.position.set(0, 3, 0)
                                             } else {
                                                 logo.style.width = "60vw";
                                                 logo.style.marginTop = "72px";
                                                 logo.style.marginLeft = "20vw";
-                                                plight.intensity = 0.5;
+                                                plight.intensity = 0.25;
 
                                                 cameraGroup.position.set(0, 3, 0)
                                             }
