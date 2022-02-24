@@ -43,7 +43,7 @@
         let ticking = false;
         let particles;
 
-        const plight = new THREE.PointLight(0xfffcfa, 0.8, 50, 0.05);
+        const plight = new THREE.PointLight(0xfffaf7, 0.8, 50, 0.05);
         plight.castShadow = true;
         plight.shadow.mapSize.width = 2048;
         plight.shadow.mapSize.height = 2048;
@@ -51,7 +51,7 @@
         plight.shadow.camera.far = 30;
         plight.shadow.focus = 1
         plight.shadow.bias = -0.002;
-        plight.position.set(0, 4, 0);
+        plight.position.set(-0.5, 4, -0.5);
         scene.add(plight);
 
         const particleNum = 5000;
