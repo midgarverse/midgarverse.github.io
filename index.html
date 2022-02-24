@@ -54,8 +54,6 @@
         plight.position.set(0, 4, 0);
         scene.add(plight);
 
-
-
         const particleNum = 30000;
         const maxRange = 20;
         const minRange = 10;
@@ -127,8 +125,8 @@
             radius = 200;
         var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
 
-        scene.background = new THREE.Color(0x080a0f);
-        scene.fog = new THREE.FogExp2(0x080a0f, 0.035);
+        scene.background = new THREE.Color(0x0a0e14);
+        scene.fog = new THREE.FogExp2(0x0a0e14, 0.035);
         gradient.addColorStop(0, 'rgb(200,200,200)');
         gradient.addColorStop(0.1, 'rgb(134,134,134)');
 
@@ -202,6 +200,10 @@
         const camPositionsY = [1.4, 1.4, 1.4, 1.5, 1.5, 1.2, 1.2, 1.3, 1.3, 1.2, 1.2, 1.4, 1.4, 1.5, 1.5,];
         const camPositionsZ = [0, 0, 0, -3.6, -3.6, 2.6, 2.6, -1, -1, 1.9, 1.9, -2.5, -2.5,];
 
+        const camRailX = [0, -3.6, -2.65, -3.15, 2, 2.5,];
+        const camRailY = [1.4, 1.5, 1.2, 1.3, 1.2, 1.4, 1.5,];
+        const camRailZ = [0, -3.6, 2.6, -1, 1.9, -2.5,];
+
         const cursor = {}
         cursor.x = 0
         cursor.y = 0
@@ -219,56 +221,109 @@
 
         function scrollFunction() {
             var logo = document.getElementById("logo");
-            var l4 = 2400;
+            var l10 = 6000;
+            var l9 = 5400;
+            var l8 = 4800;
+            var l7 = 4200;
+            var l6 = 3600;
+            var l5 = 2600;
+            var l4 = 2200;
             var l3 = 1800;
             var l2 = 1000;
             var l1 = 500;
 
-            if (document.documentElement.scrollTop > l4) {
-                var interp = ((document.documentElement.scrollTop - l4) / (l4));
+            if (window.pageYOffset > l9) {
+                var interp = ((window.pageYOffset - l9) / (l10 - l9));
                 logo.style.width = "20vw";
                 logo.style.marginTop = "24px";
                 logo.style.marginLeft = "2vw";
-
+                plight.intensity = 0.85;
 
                 cameraGroup.position.set(0, 0, 0)
             } else {
-                if (document.documentElement.scrollTop > l3) {
-                    var interp = ((document.documentElement.scrollTop - l3) / (l4 - l3));
+                if (window.pageYOffset > l8) {
+                    var interp = ((window.pageYOffset - l8) / (l9 - l8));
                     logo.style.width = "20vw";
                     logo.style.marginTop = "24px";
                     logo.style.marginLeft = "2vw";
                     plight.intensity = 0.85;
 
-
                     cameraGroup.position.set(0, 0, 0)
                 } else {
-                    if (document.documentElement.scrollTop > l2) {
-                        var interp = ((document.documentElement.scrollTop - l2) / (l3 - l2));
-                        logo.style.width = 40 - (20 * interp) + "vw";
-                        logo.style.marginTop = 54 - (30 * interp) + "px";
-                        logo.style.marginLeft = 12 - (10 * interp) + "vw";
-                        plight.intensity = 0.65 + 0.2 * interp;
+                    if (window.pageYOffset > l7) {
+                        var interp = ((window.pageYOffset - l7) / (l8 - l7));
+                        logo.style.width = "20vw";
+                        logo.style.marginTop = "24px";
+                        logo.style.marginLeft = "2vw";
+                        plight.intensity = 0.85;
 
-
-                        cameraGroup.position.set(0, 3 * (1 - interp), 0)
+                        cameraGroup.position.set(0, 0, 0)
                     } else {
-                        if (document.documentElement.scrollTop > l1) {
-                            var interp = ((document.documentElement.scrollTop - l1) / (l2 - l1));
-                            logo.style.width = 60 - (20 * interp) + "vw";
-                            logo.style.marginTop = 72 - (18 * interp) + "px";
-                            logo.style.marginLeft = 20 - (8 * interp) + "vw";
-                            plight.intensity = 0.5 + 0.15 * interp;
+                        if (window.pageYOffset > l6) {
+                            var interp = ((window.pageYOffset - l6) / (l7 - l6));
+                            logo.style.width = "20vw";
+                            logo.style.marginTop = "24px";
+                            logo.style.marginLeft = "2vw";
+                            plight.intensity = 0.85;
 
-
-                            cameraGroup.position.set(0, 3, 0)
+                            cameraGroup.position.set(0, 0, 0)
                         } else {
-                            logo.style.width = "60vw";
-                            logo.style.marginTop = "72px";
-                            logo.style.marginLeft = "20vw";
-                            plight.intensity = 0.5;
+                            if (window.pageYOffset > l5) {
+                                var interp = ((window.pageYOffset - l5) / (l6 - l5));
+                                logo.style.width = "20vw";
+                                logo.style.marginTop = "24px";
+                                logo.style.marginLeft = "2vw";
+                                plight.intensity = 0.85;
 
-                            cameraGroup.position.set(0, 3, 0)
+                                cameraGroup.position.set(0, 0, 0)
+                            } else {
+                                if (window.pageYOffset > l4) {
+                                    var interp = ((window.pageYOffset - l4) / (l5 - l4));
+                                    logo.style.width = "20vw";
+                                    logo.style.marginTop = "24px";
+                                    logo.style.marginLeft = "2vw";
+                                    plight.intensity = 0.85;
+
+                                    cameraGroup.position.set(0, 0, 0)
+                                } else {
+                                    if (window.pageYOffset > l3) {
+                                        var interp = ((window.pageYOffset - l3) / (l4 - l3));
+                                        logo.style.width = "20vw";
+                                        logo.style.marginTop = "24px";
+                                        logo.style.marginLeft = "2vw";
+                                        plight.intensity = 0.85;
+
+                                        cameraGroup.position.set(0, 0, 0)
+                                    } else {
+                                        if (window.pageYOffset > l2) {
+                                            var interp = ((window.pageYOffset - l2) / (l3 - l2));
+                                            logo.style.width = 40 - (20 * interp) + "vw";
+                                            logo.style.marginTop = 54 - (30 * interp) + "px";
+                                            logo.style.marginLeft = 12 - (10 * interp) + "vw";
+                                            plight.intensity = 0.65 + 0.2 * interp;
+
+                                            cameraGroup.position.set(0, 3 * (1 - interp), 0)
+                                        } else {
+                                            if (window.pageYOffset > l1) {
+                                                var interp = ((window.pageYOffset - l1) / (l2 - l1));
+                                                logo.style.width = 60 - (20 * interp) + "vw";
+                                                logo.style.marginTop = 72 - (18 * interp) + "px";
+                                                logo.style.marginLeft = 20 - (8 * interp) + "vw";
+                                                plight.intensity = 0.5 + 0.15 * interp;
+
+                                                cameraGroup.position.set(0, 3, 0)
+                                            } else {
+                                                logo.style.width = "60vw";
+                                                logo.style.marginTop = "72px";
+                                                logo.style.marginLeft = "20vw";
+                                                plight.intensity = 0.5;
+
+                                                cameraGroup.position.set(0, 3, 0)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -277,40 +332,55 @@
 
         const uniTime = 1;
         const vertex = new THREE.Vector3();
-        var offset = 0;
-        var tempOffset = 0;
-        var jankCd = 1;
+        var offset = 0; var xO = 0; var yO = 0; var zO = 0;
+        var tempOffset = 0; var xTO = 0; var yTO = 0; var zTO = 0;
         var oldTime = uniTime * performance.now() * 0.001;
         var dir = 1;
+        var interpIndex = 0;
+        var steps = 360;
 
         function render() {
             var time = performance.now() * 0.001;
             var delta = time - oldTime;
             oldTime = time;
-            jankCd -= delta;
             var docLen = document.height;
+            steps--;
 
-            var proportion = (camPositionsX.length) * window.scrollY / (18000 * 1.1 - window.innerHeight);
-            var index = Math.floor(proportion);
-            var position = proportion - index;
-            var posX = lerp(camPositionsX[index], camPositionsX[(index + 1 == camPositionsX.length ? index : index + 1)], position);
-            var posY = lerp(camPositionsY[index], camPositionsY[(index + 1 == camPositionsY.length ? index : index + 1)], position);
-            var posZ = lerp(camPositionsZ[index], camPositionsZ[(index + 1 == camPositionsZ.length ? index : index + 1)], position);
+            if (steps < 1) {
+                if (Math.random() > 0.995) {
+                    var newIndex = interpIndex;
+                    var iter = 0;
+                    while (newIndex == interpIndex && iter < 5) {
+                        newIndex = Math.floor(camRailX.length * Math.random());
+                        iter++
+                    }
+                    xTO = -camRailX[newIndex] + camRailX[interpIndex];
+                    yTO = -camRailY[newIndex] + camRailY[interpIndex];
+                    zTO = -camRailZ[newIndex] + camRailZ[interpIndex];
+                    interpIndex = newIndex;
+                    tempOffset += (2 * Math.random() - 1) * 3.14159;
+                    dir *= -1;
+                    steps = 360;
+                }
+            }
+
+            offset += 0.05 * tempOffset;
+            tempOffset *= 0.95;
+            xO += 0.025 * xTO;
+            xTO *= 0.975;
+            yO += 0.025 * yTO;
+            yTO *= 0.975;
+            zO += 0.025 * zTO;
+            zTO *= 0.975;
+            var posX = camRailX[interpIndex] + xTO; //lerp(camPositionsX[index], camPositionsX[(index + 1 == camPositionsX.length ? index : index + 1)], position);
+            var posY = camRailY[interpIndex] + yTO; //lerp(camPositionsY[index], camPositionsY[(index + 1 == camPositionsY.length ? index : index + 1)], position);
+            var posZ = camRailZ[interpIndex] + zTO; //lerp(camPositionsZ[index], camPositionsZ[(index + 1 == camPositionsZ.length ? index : index + 1)], position);
 
             cam2Group.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
-            if (tempOffset <= 0.01 && jankCd < 0) {
-                if (Math.random() > 0.995) {
-                    tempOffset += (2 * Math.random() - 1) * 6.2832;
-                    jankCd = 5;
-                    dir *= -1;
-                }
-            }
-            offset += 0.05 * tempOffset;
             var camGPosX = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
             var camGPosZ = 3 - 6.2832 * cursor.x + time * 0.1 + offset;
-            tempOffset *= 0.95;
             var camGPosY = -1.25 - 3 * cursor.y
 
             camera.position.set(dir * 3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
@@ -359,9 +429,7 @@
             font-weight: 600;
             src: local(''),
                 url('./fonts/inknut-antiqua-v12-latin-600.woff2') format('woff2'),
-                /* Chrome 26+, Opera 23+, Firefox 39+ */
                 url('./fonts/inknut-antiqua-v12-latin-600.woff') format('woff');
-            /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
         }
 
         html {
@@ -372,7 +440,7 @@
         body {
             margin: 0px;
             min-height: calc(var(--vh, 1vh) * 100);
-            height: 18000px;
+            height: 6000px;
             position: relative;
         }
 
@@ -384,21 +452,21 @@
 
         h1 {
             font-family: 'Inknut Antiqua';
-            font-size: 2vh;
+            font-size: 2.5vh;
             position: relative;
             color: #fff;
         }
 
         h2 {
             font-family: 'Inknut Antiqua';
-            font-size: 1.5vh;
+            font-size: 2.25vh;
             position: relative;
             color: #fff;
         }
 
         p {
             position: relative;
-            font-size: 1.2vh;
+            font-size: 2vh;
             line-height: 2vh;
             color: #fff;
         }
@@ -442,58 +510,54 @@
         zIndex="5555">
     </div> -->
 
-    <div id="scrollable" class="floating"
-        style="text-align:center; top:12vh; margin-top:12vh; padding-top:12vh; overflow:scroll">
-        <div id="mainTable">
-            <div style="margin-top:4500px;">
-                <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
-                <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
-                    explore and fight their way to fame and glory.</p>
-                <p></p>
-            </div>
-            <div style="margin-top:2900px;">
-                <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
-                <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
-                    collaborative play.<br>
-                    Via Trade Contracts, Vikings can control the supply and demand of commodities for kingdoms and
-                    empires well beyond the borders of Viking Scandinavia.<br>
-                    Owned land provides further opportunity to foster relationships and boost trade income and military
-                    stability.</p>
-            </div>
-            <div style="margin-top:2900px;">
-                <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
-                </h2>
-                <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
-                    your own vessel as you set forth to unchartered waters.<br>
-                    Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
-                    Viking's fame and wealth</p>
-            </div>
-            <div style="margin-top:2900px;">
-                <h2>Secure your land, gather its resources, and fortify your position</h2>
-                <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
-                    and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
-                    resources.<br>
-                    Moreover, each land has a number of construction slots which can be developed to suit the owner's
-                    needs.<br>
-                    Each type of construction has its own aesthetics and benefits to the landowner.<br>
-                    Land can be gained as a conquest of enemy lands following raids and battles, as a discovery when
-                    exploring new lands to settle, or as part of a trade arrangement with foreign kingdoms.<br>
-                    Rental contracts allow Vikings to lease and rent land from other Vikings, increasing the
-                    accessibility of rare materials and generating passive income for landowners.
-                </p>
-            </div>
-            <div style="margin-top:2900px;">
-                <h2>Topple Kingdoms and Empires and trample their armies under Odin's banner</h2>
-                <p>It is a time of change and conflict for the Vikings. <br>
-                    The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. The Volvas
-                    have been shown the death of our gods. <br>
-                    We must fight and die with glory. That is the Viking way.
-                </p>
-            </div>
+    <div id="content" style="overflow-x:hidden; text-align:center;">
+        <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1200px; max-width:90vw;">
+            <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
+            <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
+                explore and fight their way to fame and glory.</p>
         </div>
-
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+            <h2>Establish sprawling Trade Empires and unstoppable Military Alliances</h2>
+            <p>Social contracts allow players to create binding oaths, enabling rich commerce and military
+                collaborative play.<br>
+                Via Trade Contracts, Vikings can control the supply and demand of commodities for kingdoms and
+                empires well beyond the borders of Viking Scandinavia.<br>
+                Owned land provides further opportunity to foster relationships and boost trade income and military
+                stability.</p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+            <h2>Brave the stormy and icy waves with the likes of Harald Bluetooth, Hrafna-Floki and Leif Erikson
+            </h2>
+            <p>Players must engage in the prominent Viking tradition of seafaring. Join the Clan Fleet, or command
+                your own vessel as you set forth to unchartered waters.<br>
+                Hostile raids, trade missions, and exploration journeys each offer unique ways of increasing a
+                Viking's fame and wealth</p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; width:1200px; max-width:90vw;">
+            <h2>Secure your land, gather its resources, and fortify your position</h2>
+            <p>Land ownership opens a whole world of opportunities. From logging and hunting, to farming, smithing
+                and shipbuilding, owning land gives Vikings the chance to generate natural and fabricated
+                resources.<br>
+                Moreover, each land has a number of construction slots which can be developed to suit the owner's
+                needs.<br>
+                Each type of construction has its own aesthetics and benefits to the landowner.<br>
+                Land can be gained as a conquest of enemy lands following raids and battles, as a discovery when
+                exploring new lands to settle, or as part of a trade arrangement with foreign kingdoms.<br>
+                Rental contracts allow Vikings to lease and rent land from other Vikings, increasing the
+                accessibility of rare materials and generating passive income for landowners.
+            </p>
+        </div>
+        <div style="margin-left:auto; margin-right:auto; margin-top:800px; margin-bottom:800px; width:1200px; max-width:90vw;">
+            <h2>Topple Kingdoms and Empires and trample their armies under Odin's banner</h2>
+            <p>It is a time of change and conflict for the Vikings. <br>
+                The expansion of the Holy Roman Empire and other Christian kingdoms threatens our ways. <br>
+                The Volvas have seen the death of our gods. <br>
+                The time of swords and axes, the wolf blizzard and ragnarok are comming.<br>
+                We must fight and die with glory. That is the Viking way.
+            </p>
+        </div>
     </div>
-
+    </div>
 </body>
 
 </html>
