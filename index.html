@@ -54,9 +54,9 @@
         plight.position.set(0, 4, 0);
         scene.add(plight);
 
-        const particleNum = 30000;
-        const maxRange = 20;
-        const minRange = 10;
+        const particleNum = 5000;
+        const maxRange = 18;
+        const minRange = 2;
 
         const onResize = () => {
             const width = window.innerWidth;
@@ -313,11 +313,12 @@
         var dir = 1;
         var interpIndex = 0;
         var steps = 360;
+        var rotCounter = 0;
 
         function render() {
             var time = performance.now() * 0.001;
             var delta = time - oldTime;
-            moveTO -= delta;
+            moveTO = Math.max(0,moveTO-delta);
             oldTime = time;
             var docLen = document.height;
             steps--;
@@ -355,12 +356,12 @@
             cam2Group.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
-            var camGPosX = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
-            var camGPosZ = 3 - 6.2832 * cursor.x + time * (1 / Math.max(1, moveTO)) * 0.1 + offset;
+            rotCounter += delta*(1/(1+moveTO))
+            var camGPosX = 6.2832 * cursor.x + rotCounter * 0.1 + offset;
             var camGPosY = -1.25 - 3 * cursor.y
 
-            camera.position.set(dir * 3 * Math.cos(camGPosX), -camGPosY, 3 * Math.sin(camGPosX))
-            camera.lookAt(posX, posY, posZ);
+            camera.position.set(dir * 2.5 * Math.cos(camGPosX), -camGPosY, 2.5 * Math.sin(camGPosX))
+            camera.lookAt(camRailX[interpIndex], camRailY[interpIndex], camRailZ[interpIndex]                                                                                                                                                                                     );
 
             effect.render(scene, camera);
 
@@ -476,8 +477,8 @@
     <!-- <div class="topFixed" style="position:fixed; top:0vh; left:0vw; text-align: center; color: #fff;overflow-y: hidden;"
         zIndex="5555">
     </div> -->
-    <div id="content" style="overflow-x:hidden; text-align:center; margin-left:auto; margin-right:auto; ">
-        <div style="margin-left:auto; margin-right:auto; margin-top:1600px; width:1080px; max-width:90vw;">
+    <div id="content" style="overflow-x:hidden; text-align:center; margin-left:24vw; margin-right:auto; ">
+        <div style="margin-left:auto; margin-right:auto; margin-top:2000px; width:1080px; max-width:90vw;">
             <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
             <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                 explore and fight their way to fame and glory.</p>
