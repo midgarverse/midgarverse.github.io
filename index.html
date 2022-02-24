@@ -396,35 +396,6 @@
             render();
         }
 
-        function animate() {
-
-            var time = performance.now() * 0.001;
-            if (null == particles) return;
-            const posArr = particles.geometry.getAttribute('position');
-            for (var i = 0; i < posArr.count; i++) {
-
-                vertex.fromBufferAttribute(posArr, i);
-
-                const x = i * 3;
-                const y = i * 3 + 1;
-                const z = i * 3 + 2;
-
-                const velX = Math.sin(time * 0.001 * velocities[i].x) * 0.1;
-                const velZ = Math.cos(time * 0.0015 * velocities[i].z) * 0.1;
-
-                vertex.x += velX;
-                vertex.y += velocities[i].y;
-                vertex.z += velZ;
-
-                if (vertex.y < -0.5 * minRange) {
-                    vertex.y = minRange;
-                }
-
-            }
-            requestAnimationFrame(animate);
-            render();
-        }
-
         scrollFunction();
         animate();
 
