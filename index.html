@@ -5,6 +5,14 @@
     <meta charset="utf-8">
     <title>Midgarverse | Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9XMR4L8LRK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-9XMR4L8LRK');
+    </script>
     <script type="importmap">
         {
           "imports": {
@@ -20,15 +28,12 @@
         import { OutlineEffect } from "OutlineEffect";
         const scene = new THREE.Scene();
 
-        const cam2Group = new THREE.Group();
-        const cameraGroup = new THREE.Group()
-        cam2Group.add(cameraGroup);
+        const camOuterOrbit = new THREE.Group();
+        const camInnerOrbit = new THREE.Group()
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        cameraGroup.add(camera);
-        scene.add(cam2Group);
-
-        const ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-        // scene.add(ball);
+        camInnerOrbit.add(camera);
+        camOuterOrbit.add(camInnerOrbit);
+        scene.add(camOuterOrbit);
 
         const canvas = document.querySelector('canvas.webgl');
         canvas.width = window.innerWidth;
@@ -39,27 +44,55 @@
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+        // This is the colour of the 'world' behind all the characters and floor, etc.
+        scene.background = new THREE.Color(0x38444f);
+
+        // This is the fog effect which blurs the distant objects close to the horizon.
+        // The fog has a colour and exponential decay factor.
+        scene.fog = new THREE.FogExp2(0x38444f, 0.035);
+
+        // These are parameters to control the snowflake effect
+        const particleNum = 5000;
+        const maxRange = 18;
+        const minRange = 2;
+
+        // This is the ambient light (applies flat to everything)
+        const everywhereLight = new THREE.AmbientLight(0x2a2a2a);
+
+        // This is the hovering light which casts shadows.
+        // The parameters are: colour, radiance, radius, decay
+        const lightBulbie = new THREE.PointLight(0xfffaf7, 0.8, 50, 0.1);
+
+        // This vector sets the position of the hovering light
+        lightBulbie.position.set(-0.5, 4, -0.5);
+        lightBulbie.castShadow = true;
+        lightBulbie.shadow.mapSize.width = 2048;
+        lightBulbie.shadow.mapSize.height = 2048;
+        lightBulbie.shadow.camera.near = 0.1;
+        lightBulbie.shadow.camera.far = 30;
+        lightBulbie.shadow.focus = 1
+        lightBulbie.shadow.bias = -0.002;
+        scene.add(everywhereLight);
+        scene.add(lightBulbie);
+
+        var texture = document.createElement('canvas');
+        texture.width = texture.height = 500;
+        var ctx = texture.getContext('2d');
+        var gradient = ctx.createRadialGradient(250, 250, 0, 250, 250, 200);
+
+        // Circular gradient which defines the colour of the floor.
+        // Each gradient step has 2 parameters, a percentage from the center, and a colour.
+        gradient.addColorStop(0, 'rgb(200,200,200)');
+        gradient.addColorStop(0.06, 'rgb(150,150,150)');
+        gradient.addColorStop(0.08, 'rgb(150,150,150)');
+        gradient.addColorStop(0.09, 'rgb(56,68,79)');
+
         let lastKnownScr = 0;
         let ticking = false;
         let particles;
 
-        const plight = new THREE.PointLight(0xfffaf7, 0.8, 50, 0.05);
-        plight.castShadow = true;
-        plight.shadow.mapSize.width = 2048;
-        plight.shadow.mapSize.height = 2048;
-        plight.shadow.camera.near = 0.1;
-        plight.shadow.camera.far = 30;
-        plight.shadow.focus = 1
-        plight.shadow.bias = -0.002;
-        plight.position.set(-0.5, 4, -0.5);
-        scene.add(plight);
-
-        scene.background = new THREE.Color(0x181f25);
-        scene.fog = new THREE.FogExp2(0x181f25, 0.035);
-
-        const particleNum = 5000;
-        const maxRange = 18;
-        const minRange = 2;
+        const ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        // scene.add(ball);
 
         const onResize = () => {
             const width = window.innerWidth;
@@ -81,6 +114,7 @@
         }
         let pointGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
+        // Load the snowflake textures. Future TODO: have alternate textures.
         let tLoader = new THREE.TextureLoader();
         tLoader.load('./images/snow.png', function (texture) {
             const pointMaterial = new THREE.PointsMaterial({
@@ -107,30 +141,7 @@
             velocities.push(particle);
         }
 
-        const colors = new Uint8Array(10);
-
-        const format = (renderer.capabilities.isWebGL2) ? THREE.RedFormat : THREE.LuminanceFormat;
-        for (let c = 0; c <= colors.length; c++) {
-            colors[c] = (c / colors.length) * 256;
-        }
-        const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format);
-        gradientMap.needsUpdate = true;
-
-        const floorgeo = new THREE.CircleGeometry(200, 16);
-
-        var texture = document.createElement('canvas');
-        texture.width = texture.height = 500;
-        var ctx = texture.getContext('2d');
-        var x = 250,
-            y = 250,
-            innerRadius = 0,
-            outerRadius = 200,
-            radius = 200;
-        var gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
-
-        gradient.addColorStop(0, 'rgb(150,150,150)');
-        gradient.addColorStop(0.06, 'rgb(150,150,150)');
-        gradient.addColorStop(0.12, 'rgb(24,31,37)');
+        const floorgeo = new THREE.CircleGeometry(100, 16);
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 500, 1500);
@@ -170,10 +181,6 @@
         }, false);
 
         const effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
-
-        const camPositionsX = [0, 0, 0, -3.6, -3.6, -2.65, -2.65, -3.15, -3.15, 2, 2, 2.5, 2.5,];
-        const camPositionsY = [1.4, 1.4, 1.4, 1.5, 1.5, 1.2, 1.2, 1.3, 1.3, 1.2, 1.2, 1.4, 1.4, 1.5, 1.5,];
-        const camPositionsZ = [0, 0, 0, -3.6, -3.6, 2.6, 2.6, -1, -1, 1.9, 1.9, -2.5, -2.5,];
 
         const camRailX = [0, -3.6, -2.65, -3.15, 2, 2.5,];
         const camRailY = [1.4, 1.5, 1.2, 1.3, 1.2, 1.4, 1.5,];
@@ -215,88 +222,88 @@
                 logo.style.width = "20vw";
                 logo.style.marginTop = "24px";
                 logo.style.marginLeft = "2vw";
-                plight.intensity = 0.85;
+                lightBulbie.intensity = 0.85;
 
-                cameraGroup.position.set(0, 0, 0)
+                camInnerOrbit.position.set(0, 0, 0)
             } else {
                 if (window.pageYOffset > l8) {
                     var interp = ((window.pageYOffset - l8) / (l9 - l8));
                     logo.style.width = "20vw";
                     logo.style.marginTop = "24px";
                     logo.style.marginLeft = "2vw";
-                    plight.intensity = 0.85;
+                    lightBulbie.intensity = 0.85;
 
-                    cameraGroup.position.set(0, 0, 0)
+                    camInnerOrbit.position.set(0, 0, 0)
                 } else {
                     if (window.pageYOffset > l7) {
                         var interp = ((window.pageYOffset - l7) / (l8 - l7));
                         logo.style.width = "20vw";
                         logo.style.marginTop = "24px";
                         logo.style.marginLeft = "2vw";
-                        plight.intensity = 0.85;
+                        lightBulbie.intensity = 0.85;
 
-                        cameraGroup.position.set(0, 0, 0)
+                        camInnerOrbit.position.set(0, 0, 0)
                     } else {
                         if (window.pageYOffset > l6) {
                             var interp = ((window.pageYOffset - l6) / (l7 - l6));
                             logo.style.width = "20vw";
                             logo.style.marginTop = "24px";
                             logo.style.marginLeft = "2vw";
-                            plight.intensity = 0.85;
+                            lightBulbie.intensity = 0.85;
 
-                            cameraGroup.position.set(0, 0, 0)
+                            camInnerOrbit.position.set(0, 0, 0)
                         } else {
                             if (window.pageYOffset > l5) {
                                 var interp = ((window.pageYOffset - l5) / (l6 - l5));
                                 logo.style.width = "20vw";
                                 logo.style.marginTop = "24px";
                                 logo.style.marginLeft = "2vw";
-                                plight.intensity = 0.85;
+                                lightBulbie.intensity = 0.85;
 
-                                cameraGroup.position.set(0, 0, 0)
+                                camInnerOrbit.position.set(0, 0, 0)
                             } else {
                                 if (window.pageYOffset > l4) {
                                     var interp = ((window.pageYOffset - l4) / (l5 - l4));
                                     logo.style.width = "20vw";
                                     logo.style.marginTop = "24px";
                                     logo.style.marginLeft = "2vw";
-                                    plight.intensity = 0.85;
+                                    lightBulbie.intensity = 0.85;
 
-                                    cameraGroup.position.set(0, 0, 0)
+                                    camInnerOrbit.position.set(0, 0, 0)
                                 } else {
                                     if (window.pageYOffset > l3) {
                                         var interp = ((window.pageYOffset - l3) / (l4 - l3));
                                         logo.style.width = "20vw";
                                         logo.style.marginTop = "24px";
                                         logo.style.marginLeft = "2vw";
-                                        plight.intensity = 0.85;
+                                        lightBulbie.intensity = 0.85;
 
-                                        cameraGroup.position.set(0, 0, 0)
+                                        camInnerOrbit.position.set(0, 0, 0)
                                     } else {
                                         if (window.pageYOffset > l2) {
                                             var interp = ((window.pageYOffset - l2) / (l3 - l2));
                                             logo.style.width = 40 - (20 * interp) + "vw";
                                             logo.style.marginTop = 54 - (30 * interp) + "px";
                                             logo.style.marginLeft = 12 - (10 * interp) + "vw";
-                                            plight.intensity = 0.5 + 0.35 * interp;
+                                            lightBulbie.intensity = 0.5 + 0.35 * interp;
 
-                                            cameraGroup.position.set(0, 3 * (1 - interp), 0)
+                                            camInnerOrbit.position.set(0, 3 * (1 - interp), 0)
                                         } else {
                                             if (window.pageYOffset > l1) {
                                                 var interp = ((window.pageYOffset - l1) / (l2 - l1));
                                                 logo.style.width = 60 - (20 * interp) + "vw";
                                                 logo.style.marginTop = 72 - (18 * interp) + "px";
                                                 logo.style.marginLeft = 20 - (8 * interp) + "vw";
-                                                plight.intensity = 0.25 + 0.25 * interp;
+                                                lightBulbie.intensity = 0.25 + 0.25 * interp;
 
-                                                cameraGroup.position.set(0, 3, 0)
+                                                camInnerOrbit.position.set(0, 3, 0)
                                             } else {
                                                 logo.style.width = "60vw";
                                                 logo.style.marginTop = "72px";
                                                 logo.style.marginLeft = "20vw";
-                                                plight.intensity = 0.25;
+                                                lightBulbie.intensity = 0.25;
 
-                                                cameraGroup.position.set(0, 3, 0)
+                                                camInnerOrbit.position.set(0, 3, 0)
                                             }
                                         }
                                     }
@@ -355,11 +362,11 @@
             var posY = camRailY[interpIndex] + yTO;
             var posZ = camRailZ[interpIndex] + zTO;
 
-            cam2Group.position.set(posX, posY, posZ)
+            camOuterOrbit.position.set(posX, posY, posZ)
             ball.position.set(posX, posY, posZ)
 
             rotCounter += delta * (1 / (1 + moveTO))
-            var camGPosX = 6.2832 * cursor.x + rotCounter * 0.1 + offset;
+            var camGPosX = 6.2832 * dir * cursor.x + rotCounter * 0.1 + offset;
             var camGPosY = -1.25 - 1 * cursor.y
 
             camera.position.set(dir * 2.5 * Math.cos(camGPosX), -camGPosY, 2.5 * Math.sin(camGPosX))
@@ -505,26 +512,27 @@
             padding: 1vw;
             background-color: rgba(0, 0, 0, 0.65);
             border: .05vw solid gold;
-            margin-left:0vw; 
-            width:70vw; 
-            margin-top:10vh; 
-            border-top-left-radius: 2vw; 
-            border-bottom-right-radius: 2vw; 
-            text-align: left; 
+            margin-left: 0vw;
+            width: 70vw;
+            margin-top: 10vh;
+            border-top-left-radius: 2vw;
+            border-bottom-right-radius: 2vw;
+            text-align: left;
             z-index: 10;
         }
+
         .text-roadmap-right {
             overflow-y: hidden;
             position: relative;
             padding: 1vw;
             background-color: rgba(0, 0, 0, 0.5);
             border: .05vw solid gold;
-            margin-left:10vw; 
-            width:56vw; 
-            margin-top:10vh; 
-            border-top-right-radius: 2vw; 
-            border-bottom-left-radius: 2vw; 
-            text-align: right; 
+            margin-left: 10vw;
+            width: 56vw;
+            margin-top: 10vh;
+            border-top-right-radius: 2vw;
+            border-bottom-left-radius: 2vw;
+            text-align: right;
         }
     </style>
 </head>
@@ -581,7 +589,8 @@
                 We must fight and die with glory. That is the Viking way.
             </p>
         </div>
-        <div style="position:relative;margin-left:auto; margin-top:80vh;margin-right: auto; text-align: center; width:76vw;min-width:1080px;display:inline-block; overflow-y: hidden;">
+        <div
+            style="position:relative;margin-left:auto; margin-top:80vh;margin-right: auto; text-align: center; width:76vw;min-width:1080px;display:inline-block; overflow-y: hidden;">
             <h1 style="padding:2vh;">Project Roadmap</h1>
             <div class="text-roadmap-left">
                 <h2>First wave NFT launch &nbsp&nbsp&nbsp [06 . 2022]</h2>
@@ -637,9 +646,10 @@
                     Access to the game is subject to each player owning at least 1 Character NFT.
                 </p>
             </div>
-            
+
             <svg id="svg5" viewBox="0 0 15 200"
-                style="position:absolute; float:none; top:10vh;left:10vw; width:10vw;min-width:120px; height:100%; overflow-y: hidden;" zIndex="2">
+                style="position:absolute; float:none; top:10vh;left:10vw; width:10vw;min-width:120px; height:100%; overflow-y: hidden;"
+                zIndex="2">
                 <path id="path1354"
                     style="fill:none;stroke:gold;stroke-width:0.4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
                     d="m 6.9166042,8.7316388 c -0.72009,0.223891 -4.41095,-1.63371 -4.39344,-2.470298 h 2e-4 C 2.5262646,6.123353 2.7348054,5.9074979 3.0741551,5.651009 M 4.3398087,4.8370228 c 1.7295637,-0.9963973 4.1127713,-2.0485534 4.4119455,-1.7943 0.46941,0.398923 0.55017,4.218595 -0.005,4.649027 C 8.6194644,7.7904803 8.2119681,7.6880158 7.664649,7.465104 M 6.2656628,6.7992242 C 4.5786097,5.9090705 2.6736497,4.645612 2.7157542,4.2541238 c 0.071,-0.661826 3.68888,-2.563715 4.25735,-2.334192 l -0.00128,0.8364721 m -0.00232,1.5232869 -0.042935,28.1553842 m -0.00237,1.556456 -0.00126,0.825615 c 0.72009,0.223891 4.4109497,-1.63371 4.3934397,-2.470298 h -2e-4 c -0.0089,-0.424434 -1.9634169,-1.585575 -3.6858122,-2.39989 M 6.1684495,29.324856 C 5.6097539,29.122243 5.2006027,29.032355 5.0877883,29.12823 c -0.46941,0.398923 -0.55017,4.218595 0.005,4.649027 0.3459539,0.268334 2.7617031,-0.949494 4.4289267,-2.032409 m 1.214113,-0.887175 c 0.253953,-0.224247 0.399954,-0.406523 0.38796,-0.518042 -0.0551,-0.513605 -2.246276,-1.774027 -3.4906577,-2.205558 m -0.7635142,1.955282 0.00362,2.372637 m 0.00237,1.551746 0.029517,19.356159 m 0.00215,1.410114 2.65e-4,0.173814 m 0.00232,1.523663 0.00675,4.425163 c -0.72009,0.223891 -4.41095,-1.63371 -4.39344,-2.470298 h 2e-4 c 0.0029,-0.137988 0.2114412,-0.353843 0.5507909,-0.610332 m 1.2656536,-0.813986 c 1.7295637,-0.996397 4.1127713,-2.048553 4.4119455,-1.7943 0.46941,0.398923 0.55017,4.218595 -0.005,4.649027 -0.1272898,0.09873 -0.5347861,-0.0037 -1.0821052,-0.226646 M 6.2136147,58.942692 c -1.67393,-0.888471 -3.5395325,-2.130089 -3.4978604,-2.517556 0.071,-0.661826 3.68888,-2.563715 4.25735,-2.334192 l -0.00128,0.836472 m -0.00232,1.523287 -0.042935,28.155387 m -0.00237,1.556456 -0.00126,0.825608 c 0.72009,0.22389 4.4109497,-1.6337 4.3934397,-2.47029 h -2e-4 C 11.307257,84.093427 9.3527612,82.932286 7.6303658,82.11797 M 6.1684495,81.495868 C 5.6097539,81.293255 5.2006027,81.203367 5.0877883,81.299242 c -0.46941,0.398923 -0.55017,4.218602 0.005,4.649032 0.345954,0.268332 2.7617037,-0.949497 4.4289273,-2.032412 m 1.2141114,-0.887175 c 0.253954,-0.224248 0.399955,-0.406524 0.387961,-0.518044 -0.0551,-0.513605 -2.2462759,-1.774027 -3.4906577,-2.205558 m -0.7635142,1.955282 0.00362,2.37264 m 0.00237,1.551746 0.029517,19.356147 m 0.00215,1.41012 2.651e-4,0.17381 m 0.00232,1.52366 0.00675,4.42516 c -0.72009,0.22389 -4.41095,-1.63371 -4.39344,-2.4703 h 2e-4 c 0.0029,-0.13799 0.2114407,-0.35384 0.5507898,-0.61033 m 1.2656551,-0.81398 c 1.7295636,-0.9964 4.1127709,-2.04855 4.4119451,-1.7943 0.46941,0.39892 0.55017,4.21859 -0.005,4.64902 -0.1272898,0.0987 -0.5347861,-0.004 -1.0821052,-0.22664 m -1.4510344,-0.69343 c -1.67393,-0.88847 -3.5395325,-2.13009 -3.4978604,-2.51755 0.071,-0.66183 3.68888,-2.56372 4.25735,-2.33419 l -0.00128,0.83647 m -0.00232,1.52329 -0.042935,28.15539 m -0.00237,1.55645 -0.00126,0.82562 c 0.72009,0.22389 4.4109497,-1.63371 4.3934397,-2.4703 h -2e-4 c -0.0089,-0.42444 -1.9634168,-1.58558 -3.6858122,-2.39989 m -1.4619163,-0.62211 c -0.5586956,-0.20261 -0.9678468,-0.2925 -1.0806612,-0.19662 -0.46941,0.39892 -0.55017,4.2186 0.005,4.64903 0.345954,0.26833 2.7617043,-0.9495 4.428928,-2.03241 m 1.2141117,-0.88718 c 0.253953,-0.22424 0.399954,-0.40652 0.38796,-0.51804 -0.0551,-0.5136 -2.2462759,-1.77402 -3.4906577,-2.20555 m -0.7635142,1.95528 0.00362,2.37263 m 0.00237,1.55175 0.029517,19.35615 m 0.00215,1.41012 2.65e-4,0.17381 m 0.00232,1.52366 0.00675,4.42517 c -0.72009,0.22389 -4.41095,-1.63371 -4.39344,-2.4703 h 2e-4 c 0.0029,-0.13799 0.211441,-0.35384 0.5507905,-0.61033 m 1.2656526,-0.81399 c 1.7295638,-0.9964 4.1127726,-2.04855 4.4119469,-1.7943 0.46941,0.39892 0.55017,4.2186 -0.005,4.64903 -0.1272898,0.0987 -0.5347861,-0.004 -1.0821052,-0.22665 m -1.4510344,-0.69342 c -1.67393,-0.88847 -3.5395325,-2.13009 -3.4978604,-2.51756 0.071,-0.66182 3.68888,-2.56371 4.25735,-2.33419 l -0.00128,0.83647 m -0.00232,1.52329 -0.042935,28.15539 m -0.00237,1.55645 -0.00126,0.82561 c 0.72009,0.22389 4.4109497,-1.6337 4.3934397,-2.47029 h -2e-4 c -0.0089,-0.42444 -1.9634168,-1.58558 -3.6858122,-2.39989 m -1.3990881,-0.59908 c -0.5907395,-0.21871 -1.0264872,-0.31908 -1.1434894,-0.21965 -0.46941,0.39892 -0.55017,4.2186 0.005,4.64903 0.345954,0.26833 2.7617043,-0.9495 4.428928,-2.03241 m 1.2141117,-0.88718 c 0.253953,-0.22424 0.399954,-0.40652 0.38796,-0.51804 -0.0551,-0.51361 -2.2462759,-1.77403 -3.4906577,-2.20556" />
