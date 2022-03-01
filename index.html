@@ -147,14 +147,11 @@
             const sprite = sprites[i][1];
             const size = sprites[i][2];
             
-            materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: false, transparent: true });
+            materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: true, transparent: true });
             materials[i].color.setHSL(color[0], color[1], color[2]);
 
             let pointGeometry = new THREE.BufferGeometry().setFromPoints(points.slice(i*particleNum,(i+1)*particleNum));
             particles[i] = new THREE.Points(pointGeometry, materials[i]);
-        }
-
-        for (let i = 0; i < particles.length; i++) {
             scene.add(particles[i]);
         }
 
