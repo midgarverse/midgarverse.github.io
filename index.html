@@ -34,7 +34,7 @@
 
         const camOuterOrbit = new THREE.Group();
         const camInnerOrbit = new THREE.Group()
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 100);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 40);
         camInnerOrbit.add(camera);
         camOuterOrbit.add(camInnerOrbit);
         scene.add(camOuterOrbit);
@@ -51,27 +51,27 @@
         const composer = new EffectComposer(renderer);
         const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
         ssaoPass.kernelRadius = 0.16;
-        ssaoPass.minDistance = 0.0005;
-        ssaoPass.maxDistance = 0.003;
+        ssaoPass.minDistance = 0.00025;
+        ssaoPass.maxDistance = 0.001;
         ssaoPass.output = SSAOPass.OUTPUT.Default;
         composer.addPass(ssaoPass);
 
         const effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
 
         // This is the colour of the 'world' behind all the characters and floor, etc.
-        scene.background = new THREE.Color(0x38444f);
+        scene.background = new THREE.Color(0x586a78);
 
         // This is the fog effect which blurs the distant objects close to the horizon.
         // The fog has a colour and exponential decay factor.
-        scene.fog = new THREE.FogExp2(0x38444f, 0.035);
+        scene.fog = new THREE.FogExp2(0x586a78, 0.05);
 
 
         // This is the ambient light (applies flat to everything)
-        const everywhereLight = new THREE.AmbientLight(0x2a2a2a);
+        const everywhereLight = new THREE.AmbientLight(0x1a1a1a);
 
         // This is the hovering light which casts shadows.
         // The parameters are: colour, radiance, radius, decay
-        const lightBulbie = new THREE.PointLight(0xfffaf7, 0.8, 50, 0.1);
+        const lightBulbie = new THREE.PointLight(0xfffaf7, 0.8, 12, 0.75);
 
         // This vector sets the position of the hovering light
         lightBulbie.position.set(-0.5, 4, -0.5);
@@ -93,9 +93,9 @@
         // Circular gradient which defines the colour of the floor.
         // Each gradient step has 2 parameters, a percentage from the center, and a colour.
         gradient.addColorStop(0, 'rgb(200,200,200)');
-        gradient.addColorStop(0.06, 'rgb(150,150,150)');
-        gradient.addColorStop(0.08, 'rgb(150,150,150)');
-        gradient.addColorStop(0.09, 'rgb(56,68,79)');
+        // gradient.addColorStop(0.11, 'rgb(150,150,150)');
+        // gradient.addColorStop(0.15, 'rgb(72,84,95)');
+        gradient.addColorStop(0.2, 'rgb(0,0,0)');
 
         let lastKnownScr = 0;
         let ticking = false;
