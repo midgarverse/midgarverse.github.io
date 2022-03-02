@@ -31,186 +31,16 @@
         import { OutlineEffect } from "OutlineEffect";
         import { EffectComposer } from "EffectComposer";
         import { SSAOPass } from "SSAOPass";
-        const scene = new THREE.Scene();
 
+        var scene;
         const camOuterOrbit = new THREE.Group();
         const camInnerOrbit = new THREE.Group()
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 80);
+        var renderer, composer, ssaoPass, effect, everywhereLight, lightBulbie, ball;
         camInnerOrbit.add(camera);
         camOuterOrbit.add(camInnerOrbit);
-        scene.add(camOuterOrbit);
-
-        const canvas = document.querySelector('canvas.webgl');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-        const composer = new EffectComposer(renderer);
-        const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
-        ssaoPass.kernelRadius = 0.16;
-        ssaoPass.minDistance = 0.00025;
-        ssaoPass.maxDistance = 0.001;
-        ssaoPass.output = SSAOPass.OUTPUT.Default;
-        composer.addPass(ssaoPass);
-
-        const effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
-
-        // This is the colour of the 'world' behind all the characters and floor, etc.
-        scene.background = new THREE.Color(0x586a78);
-
-        // This is the fog effect which blurs the distant objects close to the horizon.
-        // The fog has a colour and exponential decay factor.
-        scene.fog = new THREE.FogExp2(0x586a78, 0.035);
-
-
-        // This is the ambient light (applies flat to everything)
-        const everywhereLight = new THREE.AmbientLight(0x202020);
-
-        // This is the hovering light which casts shadows.
-        // The parameters are: colour, radiance, radius, decay
-        const lightBulbie = new THREE.PointLight(0xfffaf7, 0.8, 12, 0.75);
-
-        // This vector sets the position of the hovering light
-        lightBulbie.position.set(-0.5, 4, -0.5);
-        lightBulbie.castShadow = true;
-        lightBulbie.shadow.mapSize.width = 2048;
-        lightBulbie.shadow.mapSize.height = 2048;
-        lightBulbie.shadow.camera.near = 0.1;
-        lightBulbie.shadow.camera.far = 30;
-        lightBulbie.shadow.focus = 1
-        lightBulbie.shadow.bias = -0.002;
-        scene.add(everywhereLight);
-        scene.add(lightBulbie);
-
-        var texture = document.createElement('canvas');
-        texture.width = texture.height = 500;
-        var ctx = texture.getContext('2d');
-        var gradient = ctx.createRadialGradient(250, 250, 0, 250, 250, 200);
-
-        // Circular gradient which defines the colour of the floor.
-        // Each gradient step has 2 parameters, a percentage from the center, and a colour.
-        gradient.addColorStop(0, 'rgb(200,200,200)');
-        // gradient.addColorStop(0.11, 'rgb(150,150,150)');
-        // gradient.addColorStop(0.15, 'rgb(72,84,95)');
-        gradient.addColorStop(0.2, 'rgb(0,0,0)');
-
-        let lastKnownScr = 0;
-        let ticking = false;
-
-        const ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-        // scene.add(ball);
-
-        const onResize = () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(width, height);
-            composer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        }
-
-
-        // These are parameters to control the snowflake effect
-        const particleNum = 2000;
-        const maxRange = 18;
-        const minRange = 2;
-
-        // Load the snowflake textures
-        let tLoader = new THREE.TextureLoader();
-
-        const flake0 = tLoader.load('./images/snowflake0.png')
-        const flake1 = tLoader.load('./images/snowflake1.png')
-        const flake2 = tLoader.load('./images/snowflake2.png')
-        const flake3 = tLoader.load('./images/snowflake3.png')
-        const flake4 = tLoader.load('./images/snowflake4.png')
-        const flake5 = tLoader.load('./images/snowflake5.png')
-        const flake6 = tLoader.load('./images/snowflake6.png')
-        const flake7 = tLoader.load('./images/snowflake7.png')
-        const flake8 = tLoader.load('./images/snowflake8.png')
-        const flake9 = tLoader.load('./images/snowflake9.png')
-
-        let sprites = [
-            [[0.53, 0.1, 1.0], flake0, 0.02],
-            [[0.54, 0.05, 0.99], flake1, 0.02],
-            [[0.55, 0.025, 0.99], flake2, 0.02],
-            [[0.56, 0.075, 1.0], flake3, 0.02],
-            [[0.57, 0.05, 1.0], flake4, 0.02],
-            [[0.53, 0.1, 1.0], flake5, 0.02],
-            [[0.54, 0.05, 0.99], flake6, 0.02],
-            [[0.55, 0.025, 0.99], flake7, 0.02],
-            [[0.56, 0.075, 1.0], flake8, 0.02],
-            [[0.57, 0.05, 1.0], flake9, 0.02]
-        ];
-
-        let points = [];
+        var requestId;
         let particles = [];
-        let materials = [];
-        for (let j = 0; j < particleNum * sprites.length; j++) {
-            const x = (0.5 - Math.random()) * maxRange;
-            const y = (Math.random()) * 0.5 * maxRange;
-            const z = (0.5 - Math.random()) * maxRange;
-            const particle = new THREE.Vector3(x, y, z);
-            points.push(particle)
-        }
-        for (let i = 0; i < sprites.length; i++) {
-
-            const color = sprites[i][0];
-            const sprite = sprites[i][1];
-            const size = sprites[i][2];
-
-            materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: true, transparent: true });
-            materials[i].color.setHSL(color[0], color[1], color[2]);
-
-            let pointGeometry = new THREE.BufferGeometry().setFromPoints(points.slice(i * particleNum, (i + 1) * particleNum));
-            particles[i] = new THREE.Points(pointGeometry, materials[i]);
-            scene.add(particles[i]);
-        }
-
-        const floorgeo = new THREE.CircleGeometry(100, 16);
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 500, 1500);
-        var texture = new THREE.Texture(texture);
-        texture.needsUpdate = true;
-        var cGradMaterial = new THREE.MeshStandardMaterial({
-            map: texture,
-            roughness: 1.0,
-            metalness: 0.0,
-        });
-
-        const floor = new THREE.Mesh(floorgeo, cGradMaterial);
-        floor.rotation.set(-0.5 * Math.PI, 0, 0)
-        floor.position.set(0, 0, 0);
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-        const loader = new GLTFLoader();
-        loader.load('models/combat.glb', function (gltf) {
-            for (let i = 0; i < gltf.scene.children.length; i++) {
-                const element = gltf.scene.children[i];
-                element.castShadow = true;
-                element.receiveShadow = true;
-            }
-            scene.add(gltf.scene);
-            animate();
-        });
-        document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
-            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-
-
-            render();
-        }, false);
 
         const camRailX = [0, -3.6, -2.65, -3.15, 2, 2.5,];
         const camRailY = [1.4, 1.5, 1.2, 1.3, 1.2, 1.4, 1.5,];
@@ -222,42 +52,213 @@
 
         var moveTO = 1;
 
-        window.addEventListener('mousemove', (event) => {
-            cursor.x = event.clientX / window.innerWidth - 0.5
-            cursor.y = event.clientY / window.innerHeight - 0.5
-            moveTO = 10;
-        })
+        const vertex = new THREE.Vector3();
+        var offset = 0; var xO = 0; var yO = 0; var zO = 0;
+        var tempOffset = 0; var xTO = 0; var yTO = 0; var zTO = 0;
+        var oldTime = performance.now() * 0.001;
+        var dir = 1;
+        var interpIndex = 0;
+        var steps = 360;
+        var rotCounter = 0;
 
-        function lerp(before, after, atPoint) {
-            return before + (after - before) * atPoint;
-        };
+        window.addEventListener("webglcontextlost", handleContextLost, false);
+        window.addEventListener("webglcontextrestored", handleContextRestored, false);
 
-        window.onscroll = function () { scrollFunction() };
+        function init() {
+            window.removeEventListener('resize', resizeCanvas, false);
+            window.removeEventListener('mousemove', mouseHandler);
+            window.removeEventListener('scroll', scrollFunction);
 
-        function scrollFunction() {
-            var logo = document.getElementById("logo");
-            var l10 = 4800;
-            var l9 = 4300;
-            var l8 = 3800;
-            var l7 = 3300;
-            var l6 = 2800;
-            var l5 = 2300;
-            var l4 = 1800;
-            var l3 = 1300;
-            var l2 = 600;
-            var l1 = 200;
+            scene = new THREE.Scene();
+            scene.add(camOuterOrbit);
+            var canvas = document.querySelector('canvas.webgl');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-            if (window.pageYOffset > l9) {
-                var interp = ((window.pageYOffset - l9) / (l10 - l9));
-                logo.style.width = "20vw";
-                logo.style.marginTop = "24px";
-                logo.style.marginLeft = "2vw";
-                lightBulbie.intensity = 0.85;
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-                camInnerOrbit.position.set(0, 0, 0)
-            } else {
-                if (window.pageYOffset > l8) {
-                    var interp = ((window.pageYOffset - l8) / (l9 - l8));
+            composer = new EffectComposer(renderer);
+            ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+            ssaoPass.kernelRadius = 0.16;
+            ssaoPass.minDistance = 0.00025;
+            ssaoPass.maxDistance = 0.001;
+            ssaoPass.output = SSAOPass.OUTPUT.Default;
+            composer.addPass(ssaoPass);
+
+            effect = new OutlineEffect(renderer, { "defaultThickness": 0.0005, "defaultColor": [0.25, 0.25, 0.25] });
+
+            // This is the colour of the 'world' behind all the characters and floor, etc.
+            scene.background = new THREE.Color(0x586a78);
+
+            // This is the fog effect which blurs the distant objects close to the horizon.
+            // The fog has a colour and exponential decay factor.
+            scene.fog = new THREE.FogExp2(0x586a78, 0.035);
+
+            // This is the ambient light (applies flat to everything)
+            everywhereLight = new THREE.AmbientLight(0x202020);
+
+            // This is the hovering light which casts shadows.
+            // The parameters are: colour, radiance, radius, decay
+            lightBulbie = new THREE.PointLight(0xfffaf7, 0.8, 12, 0.75);
+
+            // This vector sets the position of the hovering light
+            lightBulbie.position.set(-0.5, 4, -0.5);
+            lightBulbie.castShadow = true;
+            lightBulbie.shadow.mapSize.width = 2048;
+            lightBulbie.shadow.mapSize.height = 2048;
+            lightBulbie.shadow.camera.near = 0.1;
+            lightBulbie.shadow.camera.far = 30;
+            lightBulbie.shadow.focus = 1
+            lightBulbie.shadow.bias = -0.002;
+            scene.add(everywhereLight);
+            scene.add(lightBulbie);
+
+            var texture = document.createElement('canvas');
+            texture.width = texture.height = 500;
+            var ctx = texture.getContext('2d');
+            var gradient = ctx.createRadialGradient(250, 250, 0, 250, 250, 200);
+
+            // Circular gradient which defines the colour of the floor.
+            // Each gradient step has 2 parameters, a percentage from the center, and a colour.
+            gradient.addColorStop(0, 'rgb(200,200,200)');
+            // gradient.addColorStop(0.11, 'rgb(150,150,150)');
+            // gradient.addColorStop(0.15, 'rgb(72,84,95)');
+            gradient.addColorStop(0.2, 'rgb(0,0,0)');
+
+            const floorgeo = new THREE.CircleGeometry(100, 16);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 500, 1500);
+            var texture = new THREE.Texture(texture);
+            texture.needsUpdate = true;
+            var cGradMaterial = new THREE.MeshStandardMaterial({
+                map: texture,
+                roughness: 1.0,
+                metalness: 0.0,
+            });
+
+            const floor = new THREE.Mesh(floorgeo, cGradMaterial);
+            floor.rotation.set(-0.5 * Math.PI, 0, 0)
+            floor.position.set(0, 0, 0);
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            // scene.add(ball);
+
+
+            // These are parameters to control the snowflake effect
+            const particleNum = 2000;
+            const maxRange = 18;
+            const minRange = 2;
+
+            // Load the snowflake textures
+            let tLoader = new THREE.TextureLoader();
+
+            var flake0 = tLoader.load('./images/snowflake0.png')
+            var flake1 = tLoader.load('./images/snowflake1.png')
+            var flake2 = tLoader.load('./images/snowflake2.png')
+            var flake3 = tLoader.load('./images/snowflake3.png')
+            var flake4 = tLoader.load('./images/snowflake4.png')
+            var flake5 = tLoader.load('./images/snowflake5.png')
+            var flake6 = tLoader.load('./images/snowflake6.png')
+            var flake7 = tLoader.load('./images/snowflake7.png')
+            var flake8 = tLoader.load('./images/snowflake8.png')
+            var flake9 = tLoader.load('./images/snowflake9.png')
+
+            let sprites = [
+                [[0.53, 0.1, 1.0], flake0, 0.02],
+                [[0.54, 0.05, 0.99], flake1, 0.02],
+                [[0.55, 0.025, 0.99], flake2, 0.02],
+                [[0.56, 0.075, 1.0], flake3, 0.02],
+                [[0.57, 0.05, 1.0], flake4, 0.02],
+                [[0.53, 0.1, 1.0], flake5, 0.02],
+                [[0.54, 0.05, 0.99], flake6, 0.02],
+                [[0.55, 0.025, 0.99], flake7, 0.02],
+                [[0.56, 0.075, 1.0], flake8, 0.02],
+                [[0.57, 0.05, 1.0], flake9, 0.02]
+            ];
+
+            let points = [];
+
+            let materials = [];
+            for (let j = 0; j < particleNum * sprites.length; j++) {
+                const x = (0.5 - Math.random()) * maxRange;
+                const y = (Math.random()) * 0.5 * maxRange;
+                const z = (0.5 - Math.random()) * maxRange;
+                const particle = new THREE.Vector3(x, y, z);
+                points.push(particle)
+            }
+            for (let i = 0; i < sprites.length; i++) {
+
+                const color = sprites[i][0];
+                const sprite = sprites[i][1];
+                const size = sprites[i][2];
+
+                materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: true, transparent: true });
+                materials[i].color.setHSL(color[0], color[1], color[2]);
+
+                let pointGeometry = new THREE.BufferGeometry().setFromPoints(points.slice(i * particleNum, (i + 1) * particleNum));
+                particles[i] = new THREE.Points(pointGeometry, materials[i]);
+                scene.add(particles[i]);
+            }
+
+            var loader = new GLTFLoader();
+            loader.load('models/combat.glb', function (gltf) {
+                for (let i = 0; i < gltf.scene.children.length; i++) {
+                    const element = gltf.scene.children[i];
+                    element.castShadow = true;
+                    element.receiveShadow = true;
+                }
+                scene.add(gltf.scene);
+                animate();
+            });
+
+
+
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+
+            window.addEventListener('resize', resizeCanvas, false);
+
+            window.addEventListener('mousemove', mouseHandler);
+
+            window.addEventListener('scroll', scrollFunction);
+
+            function resizeCanvas() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize(width, height);
+                composer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                render();
+            }
+
+            function mouseHandler(event) {
+                cursor.x = event.clientX / window.innerWidth - 0.5;
+                cursor.y = event.clientY / window.innerHeight - 0.5;
+                moveTO = 10;
+            }
+
+            function scrollFunction() {
+                var logo = document.getElementById("logo");
+                var l10 = 4800;
+                var l9 = 4300;
+                var l8 = 3800;
+                var l7 = 3300;
+                var l6 = 2800;
+                var l5 = 2300;
+                var l4 = 1800;
+                var l3 = 1300;
+                var l2 = 600;
+                var l1 = 200;
+
+                if (window.pageYOffset > l9) {
+                    var interp = ((window.pageYOffset - l9) / (l10 - l9));
                     logo.style.width = "20vw";
                     logo.style.marginTop = "24px";
                     logo.style.marginLeft = "2vw";
@@ -265,8 +266,8 @@
 
                     camInnerOrbit.position.set(0, 0, 0)
                 } else {
-                    if (window.pageYOffset > l7) {
-                        var interp = ((window.pageYOffset - l7) / (l8 - l7));
+                    if (window.pageYOffset > l8) {
+                        var interp = ((window.pageYOffset - l8) / (l9 - l8));
                         logo.style.width = "20vw";
                         logo.style.marginTop = "24px";
                         logo.style.marginLeft = "2vw";
@@ -274,8 +275,8 @@
 
                         camInnerOrbit.position.set(0, 0, 0)
                     } else {
-                        if (window.pageYOffset > l6) {
-                            var interp = ((window.pageYOffset - l6) / (l7 - l6));
+                        if (window.pageYOffset > l7) {
+                            var interp = ((window.pageYOffset - l7) / (l8 - l7));
                             logo.style.width = "20vw";
                             logo.style.marginTop = "24px";
                             logo.style.marginLeft = "2vw";
@@ -283,8 +284,8 @@
 
                             camInnerOrbit.position.set(0, 0, 0)
                         } else {
-                            if (window.pageYOffset > l5) {
-                                var interp = ((window.pageYOffset - l5) / (l6 - l5));
+                            if (window.pageYOffset > l6) {
+                                var interp = ((window.pageYOffset - l6) / (l7 - l6));
                                 logo.style.width = "20vw";
                                 logo.style.marginTop = "24px";
                                 logo.style.marginLeft = "2vw";
@@ -292,8 +293,8 @@
 
                                 camInnerOrbit.position.set(0, 0, 0)
                             } else {
-                                if (window.pageYOffset > l4) {
-                                    var interp = ((window.pageYOffset - l4) / (l5 - l4));
+                                if (window.pageYOffset > l5) {
+                                    var interp = ((window.pageYOffset - l5) / (l6 - l5));
                                     logo.style.width = "20vw";
                                     logo.style.marginTop = "24px";
                                     logo.style.marginLeft = "2vw";
@@ -301,39 +302,49 @@
 
                                     camInnerOrbit.position.set(0, 0, 0)
                                 } else {
-                                    if (window.pageYOffset > l3) {
-                                        var interp = ((window.pageYOffset - l3) / (l4 - l3));
+                                    if (window.pageYOffset > l4) {
+                                        var interp = ((window.pageYOffset - l4) / (l5 - l4));
                                         logo.style.width = "20vw";
                                         logo.style.marginTop = "24px";
                                         logo.style.marginLeft = "2vw";
-                                        lightBulbie.intensity = 0.75 + 0.1 * interp;
+                                        lightBulbie.intensity = 0.85;
 
                                         camInnerOrbit.position.set(0, 0, 0)
                                     } else {
-                                        if (window.pageYOffset > l2) {
-                                            var interp = ((window.pageYOffset - l2) / (l3 - l2));
-                                            logo.style.width = 40 - (20 * interp) + "vw";
-                                            logo.style.marginTop = 54 - (30 * interp) + "px";
-                                            logo.style.marginLeft = 12 - (10 * interp) + "vw";
-                                            lightBulbie.intensity = 0.5 + 0.25 * interp;
+                                        if (window.pageYOffset > l3) {
+                                            var interp = ((window.pageYOffset - l3) / (l4 - l3));
+                                            logo.style.width = "20vw";
+                                            logo.style.marginTop = "24px";
+                                            logo.style.marginLeft = "2vw";
+                                            lightBulbie.intensity = 0.75 + 0.1 * interp;
 
-                                            camInnerOrbit.position.set(0, 3 * (1 - interp), 0)
+                                            camInnerOrbit.position.set(0, 0, 0)
                                         } else {
-                                            if (window.pageYOffset > l1) {
-                                                var interp = ((window.pageYOffset - l1) / (l2 - l1));
-                                                logo.style.width = 60 - (20 * interp) + "vw";
-                                                logo.style.marginTop = 72 - (18 * interp) + "px";
-                                                logo.style.marginLeft = 20 - (8 * interp) + "vw";
-                                                lightBulbie.intensity = 0.25 + 0.25 * interp;
+                                            if (window.pageYOffset > l2) {
+                                                var interp = ((window.pageYOffset - l2) / (l3 - l2));
+                                                logo.style.width = 40 - (20 * interp) + "vw";
+                                                logo.style.marginTop = 54 - (30 * interp) + "px";
+                                                logo.style.marginLeft = 12 - (10 * interp) + "vw";
+                                                lightBulbie.intensity = 0.5 + 0.25 * interp;
 
-                                                camInnerOrbit.position.set(0, 3, 0)
+                                                camInnerOrbit.position.set(0, 3 * (1 - interp), 0)
                                             } else {
-                                                logo.style.width = "60vw";
-                                                logo.style.marginTop = "72px";
-                                                logo.style.marginLeft = "20vw";
-                                                lightBulbie.intensity = 0.25;
+                                                if (window.pageYOffset > l1) {
+                                                    var interp = ((window.pageYOffset - l1) / (l2 - l1));
+                                                    logo.style.width = 60 - (20 * interp) + "vw";
+                                                    logo.style.marginTop = 72 - (18 * interp) + "px";
+                                                    logo.style.marginLeft = 20 - (8 * interp) + "vw";
+                                                    lightBulbie.intensity = 0.25 + 0.25 * interp;
 
-                                                camInnerOrbit.position.set(0, 3, 0)
+                                                    camInnerOrbit.position.set(0, 3, 0)
+                                                } else {
+                                                    logo.style.width = "60vw";
+                                                    logo.style.marginTop = "72px";
+                                                    logo.style.marginLeft = "20vw";
+                                                    lightBulbie.intensity = 0.25;
+
+                                                    camInnerOrbit.position.set(0, 3, 0)
+                                                }
                                             }
                                         }
                                     }
@@ -343,16 +354,24 @@
                     }
                 }
             }
+
+            scrollFunction();
+            animate();
+
         }
 
-        const vertex = new THREE.Vector3();
-        var offset = 0; var xO = 0; var yO = 0; var zO = 0;
-        var tempOffset = 0; var xTO = 0; var yTO = 0; var zTO = 0;
-        var oldTime = performance.now() * 0.001;
-        var dir = 1;
-        var interpIndex = 0;
-        var steps = 360;
-        var rotCounter = 0;
+        function handleContextLost(event) {
+            event.preventDefault();
+            cancelRequestAnimationFrame(requestId);
+        }
+
+        function handleContextRestored(event) {
+            init();
+        }
+
+        function lerp(before, after, atPoint) {
+            return before + (after - before) * atPoint;
+        };
 
         function render() {
             var time = performance.now() * 0.001;
@@ -406,18 +425,17 @@
         }
 
         function animate() {
-
-            var time = performance.now() * 0.001;
             if (null == particles) return;
-            requestAnimationFrame(animate);
+            requestId = requestAnimationFrame(animate);
             render();
         }
 
-        scrollFunction();
-        animate();
-
+        init();
 
     </script>
+
+
+
     <style>
         @font-face {
             font-family: 'Inknut Antiqua';
