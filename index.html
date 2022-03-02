@@ -244,8 +244,8 @@
             var l5 = 2300;
             var l4 = 1800;
             var l3 = 1300;
-            var l2 = 900;
-            var l1 = 300;
+            var l2 = 600;
+            var l1 = 200;
 
             if (window.pageYOffset > l9) {
                 var interp = ((window.pageYOffset - l9) / (l10 - l9));
@@ -306,7 +306,7 @@
                                         logo.style.width = "20vw";
                                         logo.style.marginTop = "24px";
                                         logo.style.marginLeft = "2vw";
-                                        lightBulbie.intensity = 0.85;
+                                        lightBulbie.intensity = 0.75 + 0.1 * interp;
 
                                         camInnerOrbit.position.set(0, 0, 0)
                                     } else {
@@ -315,7 +315,7 @@
                                             logo.style.width = 40 - (20 * interp) + "vw";
                                             logo.style.marginTop = 54 - (30 * interp) + "px";
                                             logo.style.marginLeft = 12 - (10 * interp) + "vw";
-                                            lightBulbie.intensity = 0.5 + 0.35 * interp;
+                                            lightBulbie.intensity = 0.5 + 0.25 * interp;
 
                                             camInnerOrbit.position.set(0, 3 * (1 - interp), 0)
                                         } else {
