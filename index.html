@@ -2,9 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Midgarverse | Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9XMR4L8LRK"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -13,6 +11,9 @@
 
         gtag('config', 'G-9XMR4L8LRK');
     </script>
+    <meta charset="utf-8">
+    <title>Midgarverse | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="importmap">
         {
           "imports": {
@@ -34,7 +35,7 @@
 
         const camOuterOrbit = new THREE.Group();
         const camInnerOrbit = new THREE.Group()
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 40);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 80);
         camInnerOrbit.add(camera);
         camOuterOrbit.add(camInnerOrbit);
         scene.add(camOuterOrbit);
@@ -63,11 +64,11 @@
 
         // This is the fog effect which blurs the distant objects close to the horizon.
         // The fog has a colour and exponential decay factor.
-        scene.fog = new THREE.FogExp2(0x586a78, 0.05);
+        scene.fog = new THREE.FogExp2(0x586a78, 0.035);
 
 
         // This is the ambient light (applies flat to everything)
-        const everywhereLight = new THREE.AmbientLight(0x1a1a1a);
+        const everywhereLight = new THREE.AmbientLight(0x202020);
 
         // This is the hovering light which casts shadows.
         // The parameters are: colour, radiance, radius, decay
@@ -235,15 +236,15 @@
 
         function scrollFunction() {
             var logo = document.getElementById("logo");
-            var l10 = 6000;
-            var l9 = 5400;
-            var l8 = 4800;
-            var l7 = 4200;
-            var l6 = 3600;
-            var l5 = 2600;
-            var l4 = 2200;
-            var l3 = 1800;
-            var l2 = 1200;
+            var l10 = 4800;
+            var l9 = 4300;
+            var l8 = 3800;
+            var l7 = 3300;
+            var l6 = 2800;
+            var l5 = 2300;
+            var l4 = 1800;
+            var l3 = 1300;
+            var l2 = 900;
             var l1 = 300;
 
             if (window.pageYOffset > l9) {
@@ -379,14 +380,14 @@
                 }
             }
 
-            offset += 0.05 * tempOffset;
-            tempOffset *= 0.95;
-            xO += 0.025 * xTO;
-            xTO *= 0.975;
-            yO += 0.025 * yTO;
-            yTO *= 0.975;
-            zO += 0.025 * zTO;
-            zTO *= 0.975;
+            offset += 0.0125 * tempOffset;
+            tempOffset *= 0.9875;
+            xO += 0.0125 * xTO;
+            xTO *= 0.9875;
+            yO += 0.0125 * yTO;
+            yTO *= 0.9875;
+            zO += 0.0125 * zTO;
+            zTO *= 0.9875;
             var posX = camRailX[interpIndex] + xTO;
             var posY = camRailY[interpIndex] + yTO;
             var posZ = camRailZ[interpIndex] + zTO;
@@ -490,7 +491,7 @@
             padding: 1vw;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 80vh;
+            margin-top: 50vh;
             width: 1080px;
             max-width: 76vw;
             background-color: rgba(0, 0, 0, 0.5);
@@ -504,7 +505,7 @@
             padding: 1vw;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 80vh;
+            margin-top: 50vh;
             width: 1080px;
             max-width: 76vw;
             background-color: rgba(0, 0, 0, 0.65);
@@ -549,7 +550,7 @@
         style="position:fixed; overflow-y: hidden; margin-top:72px; margin-left:20vw; width:60vw;" zIndex="5555" />
 
     <div id="content" style="overflow-x:hidden; margin-left:24vw; margin-right:auto; ">
-        <div class="text-box-left" style="margin-top:240vh;">
+        <div class="text-box-left" style="margin-top:140vh;">
             <h2>Explore the wondrous and often unforgiving world of the Vikings</h2>
             <p>Set in the Iron Age, Midgarverse promises to deliver an immersive experience for players looking to
                 explore and fight their way to fame and glory.<br> Embark in epic voyages with fellow Vikings</p>
@@ -596,7 +597,7 @@
             </p>
         </div>
         <div
-            style="position:relative;margin-left:auto; margin-top:80vh;margin-right: auto; text-align: center; width:76vw;min-width:1080px;display:inline-block; overflow-y: hidden;">
+            style="position:relative;margin-left:auto; margin-top:50vh;margin-right: auto; text-align: center; width:76vw;min-width:1080px;display:inline-block; overflow-y: hidden;">
             <h1 style="padding:2vh;">Project Roadmap</h1>
             <div class="text-roadmap-left">
                 <h2>First wave NFT launch &nbsp&nbsp&nbsp [08 . 2022]</h2>
@@ -654,7 +655,7 @@
             </div>
 
             <svg id="svg5" viewBox="0 0 15 200"
-                style="position:absolute; float:none; top:10vh;left:10vw; width:10vw;min-width:120px; height:100%; overflow-y: hidden;"
+                style="position:absolute; float:none; top:10vh;left:30vw; width:10vw;min-width:120px; height:100%; overflow-y: hidden;"
                 zIndex="2">
                 <path id="path1354"
                     style="fill:none;stroke:gold;stroke-width:0.4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
