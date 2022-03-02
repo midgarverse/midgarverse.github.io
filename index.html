@@ -43,10 +43,6 @@
         const canvas = document.querySelector('canvas.webgl');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        canvas.addEventListener("webglcontextlost", function (event) {
-            event.preventDefault();
-        }, false);
-        canvas.addEventListener("webglcontextrestored", setupWebGLStateAndResources, false);
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
