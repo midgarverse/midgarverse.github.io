@@ -60,6 +60,8 @@
         var interpIndex = 0;
         var steps = 360;
         var rotCounter = 0;
+        var perf = 1;
+        var snowLevel;
 
         window.addEventListener("webglcontextlost", handleContextLost, false);
         window.addEventListener("webglcontextrestored", handleContextRestored, false);
@@ -149,62 +151,7 @@
             ball = new THREE.Mesh(new THREE.SphereGeometry(0.0625, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
             // scene.add(ball);
 
-
-            // These are parameters to control the snowflake effect
-            const particleNum = 2000;
-            const maxRange = 18;
-            const minRange = 2;
-
-            // Load the snowflake textures
-            let tLoader = new THREE.TextureLoader();
-
-            var flake0 = tLoader.load('./images/snowflake0.png')
-            var flake1 = tLoader.load('./images/snowflake1.png')
-            var flake2 = tLoader.load('./images/snowflake2.png')
-            var flake3 = tLoader.load('./images/snowflake3.png')
-            var flake4 = tLoader.load('./images/snowflake4.png')
-            var flake5 = tLoader.load('./images/snowflake5.png')
-            var flake6 = tLoader.load('./images/snowflake6.png')
-            var flake7 = tLoader.load('./images/snowflake7.png')
-            var flake8 = tLoader.load('./images/snowflake8.png')
-            var flake9 = tLoader.load('./images/snowflake9.png')
-
-            let sprites = [
-                [[0.53, 0.1, 1.0], flake0, 0.02],
-                [[0.54, 0.05, 0.99], flake1, 0.02],
-                [[0.55, 0.025, 0.99], flake2, 0.02],
-                [[0.56, 0.075, 1.0], flake3, 0.02],
-                [[0.57, 0.05, 1.0], flake4, 0.02],
-                [[0.53, 0.1, 1.0], flake5, 0.02],
-                [[0.54, 0.05, 0.99], flake6, 0.02],
-                [[0.55, 0.025, 0.99], flake7, 0.02],
-                [[0.56, 0.075, 1.0], flake8, 0.02],
-                [[0.57, 0.05, 1.0], flake9, 0.02]
-            ];
-
-            let points = [];
-
-            let materials = [];
-            for (let j = 0; j < particleNum * sprites.length; j++) {
-                const x = (0.5 - Math.random()) * maxRange;
-                const y = (Math.random()) * 0.5 * maxRange;
-                const z = (0.5 - Math.random()) * maxRange;
-                const particle = new THREE.Vector3(x, y, z);
-                points.push(particle)
-            }
-            for (let i = 0; i < sprites.length; i++) {
-
-                const color = sprites[i][0];
-                const sprite = sprites[i][1];
-                const size = sprites[i][2];
-
-                materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: true, transparent: true });
-                materials[i].color.setHSL(color[0], color[1], color[2]);
-
-                let pointGeometry = new THREE.BufferGeometry().setFromPoints(points.slice(i * particleNum, (i + 1) * particleNum));
-                particles[i] = new THREE.Points(pointGeometry, materials[i]);
-                scene.add(particles[i]);
-            }
+            initSnow();
 
             var loader = new GLTFLoader();
             loader.load('models/combat.glb', function (gltf) {
@@ -360,6 +307,67 @@
 
         }
 
+        function initSnow(){
+            particles.length = 0;
+            
+            // These are parameters to control the snowflake effect
+            const particleNum = perf==1? 2000: perf==2? 1000: 500;
+            snowLevel = perf;
+            const maxRange = 18;
+            const minRange = 2;
+
+            // Load the snowflake textures
+            let tLoader = new THREE.TextureLoader();
+
+            var flake0 = tLoader.load('./images/snowflake0.png')
+            var flake1 = tLoader.load('./images/snowflake1.png')
+            var flake2 = tLoader.load('./images/snowflake2.png')
+            var flake3 = tLoader.load('./images/snowflake3.png')
+            var flake4 = tLoader.load('./images/snowflake4.png')
+            var flake5 = tLoader.load('./images/snowflake5.png')
+            var flake6 = tLoader.load('./images/snowflake6.png')
+            var flake7 = tLoader.load('./images/snowflake7.png')
+            var flake8 = tLoader.load('./images/snowflake8.png')
+            var flake9 = tLoader.load('./images/snowflake9.png')
+
+            let sprites = [
+                [[0.53, 0.1, 1.0], flake0, 0.02],
+                [[0.54, 0.05, 0.99], flake1, 0.02],
+                [[0.55, 0.025, 0.99], flake2, 0.02],
+                [[0.56, 0.075, 1.0], flake3, 0.02],
+                [[0.57, 0.05, 1.0], flake4, 0.02],
+                [[0.53, 0.1, 1.0], flake5, 0.02],
+                [[0.54, 0.05, 0.99], flake6, 0.02],
+                [[0.55, 0.025, 0.99], flake7, 0.02],
+                [[0.56, 0.075, 1.0], flake8, 0.02],
+                [[0.57, 0.05, 1.0], flake9, 0.02]
+            ];
+
+            let points = [];
+
+            let materials = [];
+            for (let j = 0; j < particleNum * sprites.length; j++) {
+                const x = (0.5 - Math.random()) * maxRange;
+                const y = (Math.random()) * 0.5 * maxRange;
+                const z = (0.5 - Math.random()) * maxRange;
+                const particle = new THREE.Vector3(x, y, z);
+                points.push(particle)
+            }
+            for (let i = 0; i < sprites.length; i++) {
+
+                const color = sprites[i][0];
+                const sprite = sprites[i][1];
+                const size = sprites[i][2];
+
+                materials[i] = new THREE.PointsMaterial({ size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: true, transparent: true });
+                materials[i].color.setHSL(color[0], color[1], color[2]);
+
+                let pointGeometry = new THREE.BufferGeometry().setFromPoints(points.slice(i * particleNum, (i + 1) * particleNum));
+                particles[i] = new THREE.Points(pointGeometry, materials[i]);
+                scene.add(particles[i]);
+            }
+        }
+
         function handleContextLost(event) {
             event.preventDefault();
             cancelRequestAnimationFrame(requestId);
@@ -376,7 +384,7 @@
         function render() {
             var time = performance.now() * 0.001;
             var delta = time - oldTime;
-            var perf = delta < 0.034? 1 : delta < 0.051? 2 : 3;
+            perf = delta < 0.034? 1 : delta < 0.051? 2 : 3;
             moveTO = Math.max(0, moveTO - delta);
             oldTime = time;
             var docLen = document.height;
@@ -422,9 +430,11 @@
             camera.position.set(dir * 2.5 * Math.cos(camGPosX), -camGPosY, 2.5 * Math.sin(camGPosX))
             camera.lookAt(camRailX[interpIndex], camRailY[interpIndex], camRailZ[interpIndex]);
 
-            if (performance==3) renderer.render(scene, camera);
-            else if (performance==2) effect.render(scene, camera);
+            if (perf==3) renderer.render(scene, camera);
+            else if (perf==2) effect.render(scene, camera);
             else composer.render(scene, camera);
+            if (snowLevel!=perf) initSnow();
+
         }
 
         function animate() {
