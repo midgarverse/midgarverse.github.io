@@ -376,6 +376,7 @@
         function render() {
             var time = performance.now() * 0.001;
             var delta = time - oldTime;
+            var perf = delta < 0.034? 1 : delta < 0.051? 2 : 3;
             moveTO = Math.max(0, moveTO - delta);
             oldTime = time;
             var docLen = document.height;
@@ -421,7 +422,9 @@
             camera.position.set(dir * 2.5 * Math.cos(camGPosX), -camGPosY, 2.5 * Math.sin(camGPosX))
             camera.lookAt(camRailX[interpIndex], camRailY[interpIndex], camRailZ[interpIndex]);
 
-            composer.render(scene, camera);
+            if (performance==3) renderer.render(scene, camera);
+            else if (performance==2) effect.render(scene, camera);
+            else composer.render(scene, camera);
         }
 
         function animate() {
